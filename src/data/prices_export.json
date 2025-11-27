@@ -1,0 +1,109 @@
+{
+  "generated_at": "2025-11-16T20:31:31.739749",
+  "products": [
+    {
+      "id": "eucerin-eczema-5oz",
+      "name": "Eucerin Eczema Relief Cream",
+      "size": "5 oz",
+      "category": "skincare",
+      "prices": [
+        {
+          "retailer_id": "walmart",
+          "current_price": 12.97,
+          "min_price": 12.97,
+          "max_price": 12.97,
+          "avg_price": 12.97,
+          "is_good_deal": false,
+          "savings_vs_avg": 0.0,
+          "observation_count": 1,
+          "last_updated": "2025-11-16T20:31:25.347458",
+          "history": [
+            {
+              "price": 12.97,
+              "timestamp": "2025-11-16T20:31:25.347458",
+              "pack_size": 1,
+              "advertised_savings": null
+            }
+          ]
+        },
+        {
+          "retailer_id": "target",
+          "current_price": 13.49,
+          "min_price": 13.49,
+          "max_price": 13.49,
+          "avg_price": 13.49,
+          "is_good_deal": false,
+          "savings_vs_avg": 0.0,
+          "observation_count": 1,
+          "last_updated": "2025-11-16T20:31:25.347466",
+          "history": [
+            {
+              "price": 13.49,
+              "timestamp": "2025-11-16T20:31:25.347466",
+              "pack_size": 1,
+              "advertised_savings": 1.0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pataday-max-strength",
+      "name": "Pataday Once Daily Relief Extra Strength",
+      "size": "2.5 mL",
+      "category": "eye-drops",
+      "prices": [
+        {
+          "retailer_id": "walmart",
+          "current_price": 21.99,
+          "min_price": 21.99,
+          "max_price": 21.99,
+          "avg_price": 21.99,
+          "is_good_deal": false,
+          "savings_vs_avg": 0.0,
+          "observation_count": 1,
+          "last_updated": "2025-11-16T20:31:25.347469",
+          "history": [
+            {
+              "price": 21.99,
+              "timestamp": "2025-11-16T20:31:25.347469",
+              "pack_size": 1,
+              "advertised_savings": null
+            }
+          ]
+        },
+        {
+          "retailer_id": "target",
+          "current_price": 23.99,
+          "min_price": 23.99,
+          "max_price": 23.99,
+          "avg_price": 23.99,
+          "is_good_deal": false,
+          "savings_vs_avg": 0.0,
+          "observation_count": 1,
+          "last_updated": "2025-11-16T20:31:25.347470",
+          "history": [
+            {
+              "price": 23.99,
+              "timestamp": "2025-11-16T20:31:25.347470",
+              "pack_size": 1,
+              "advertised_savings": null
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "retailers": [
+    {
+      "id": "walmart",
+      "name": "Walmart",
+      "base_url": "https://www.walmart.com"
+    },
+    {
+      "id": "target",
+      "name": "Target",
+      "base_url": "https://www.target.com"
+    }
+  ]
+}

@@ -1,62 +1,229 @@
-# Price History Companion (Concept)
+# Price History Companion
 
-Standalone comparison module for showing simple price history and current pricing on a small set of products across major retailers (e.g., Target, Amazon, Walmart). Intended to live inside a website or app, not as the primary product.
+A standalone price tracking module for comparing products across major retailers (Walmart, Target, Amazon). Built to help identify real deals vs. misleading "sale" prices.
 
-## Goal
+## Current Status: Prototype (2 Products × 2 Retailers)
 
-Help specific user groups (e.g., people with reactive skin / eczema / chronic dryness) quickly see:
+This prototype tracks:
+- **Products**: Eucerin Eczema Relief Cream (5oz), Pataday Eye Drops (2.5mL)
+- **Retailers**: Walmart, Target
 
-- How prices for key products move over time
-- Whether a “deal” is real or just framed as savings
-- Which retailer tends to be most consistent or fair on pricing
+## Project Structure
 
-## Core Idea
+```
+price-tracker/
+├── src/
+│   ├── models.py          # Data models (Product, Retailer, PricePoint, PriceStats)
+│   ├── database.py        # SQLite database handler
+│   ├── scraper.py         # Scraper framework (placeholders for now)
+│   ├── setup.py           # Initial database setup
+│   ├── add_price.py       # CLI tool for adding prices manually
+│   └── export.py          # Export data to JSON for web display
+├── data/
+│   ├── prices.db          # SQLite database (created on first run)
+│   └── prices_export.json # JSON export for web display
+├── templates/
+│   └── index.html         # Web-based price comparison view
+└── requirements.txt       # Python dependencies (minimal for prototype)
+```
 
-For a small, curated product set (e.g. Eucerin Eczema Repair, Pataday Maximum Strength, etc.):
+## Quick Start
 
-- Pull **current** prices from 3 major retailers  
-- Store / fetch **historical** prices to show simple trends  
-- Present **side-by-side comparison** for each product:
-  - Current price per retailer
-  - “Deal” flag vs historical average (is this actually cheaper?)
-  - Simple visualization of recent price trend (e.g., 7 / 30 / 90 days)
+### 1. Initial Setup
 
-## Example Use Case
+```bash
+# Run setup to create database and add products/retailers
+cd src
+python setup.py
+```
 
-- Product: **Pataday Maximum Strength**  
-- Retailer A (Walmart): 2-pack at “$42 instead of $44” (advertised $2 savings)  
-- Retailer B (Walmart, single): 1-pack at ~$20  
-- Retailer C (Amazon): 2-pack around ~$23  
+This will:
+- Create the SQLite database
+- Add your 2 products
+- Add your 2 retailers
+- Optionally add sample price data for testing
 
-The module would:
+### 2. Add Price Data
 
-- Show all options together (per-unit or per-pack normalization)
-- Indicate when “$1 off” or “$2 off” claims are misleading compared to other retailers
-- Highlight odd cases that might be **price mistakes** or **shipping-driven pricing**
+**Option A: Interactive Mode**
+```bash
+python add_price.py
+```
 
-## Intended Output
+**Option B: Quick Add**
+```bash
+python add_price.py eucerin-eczema-5oz walmart 12.97 "https://walmart.com/..."
+```
 
-For each product:
+**Option C: Show Current Prices**
+```bash
+python add_price.py show
+```
 
-- Compact card or table with:
-  - Product name + size (e.g., 5 oz, 2x2.5 mL)
-  - Current prices at Target / Amazon / Walmart
-  - Historical min / max / average
-  - Simple trend indicator (up, down, stable) over selected timeframe
+### 3. View in Browser
 
-## Constraints / Challenges (Notes to Self)
+```bash
+# Export data to JSON
+python export.py
 
-- Getting reliable **historical price data** from each retailer
-- Dealing with:
-  - Package size differences (single vs 2-pack)
-  - Regional or membership pricing
-  - Shipping vs pickup vs in-store price
-- Keeping the product list small and curated to stay manageable
+# Open the HTML file in your browser
+# On Mac:
+open ../templates/index.html
 
-## Repo Purpose
+# On Linux:
+xdg-open ../templates/index.html
 
-This repo is **idea + prototype notes** for:
+# On Windows:
+start ../templates/index.html
+```
 
-- Data model and interfaces for a “Price History Companion” module  
-- Potential UI sketches for embedding in an app/site  
-- Experiments with fetching, storing, and displaying multi-retailer price history
+## How to Use
+
+### Adding Products
+
+Edit `src/setup.py` to add more products to track:
+
+```python
+products = [
+    Product(
+        id="your-product-id",
+        name="Product Name",
+        size="5 oz",
+        category="skincare"
+    ),
+    # Add more products here
+]
+```
+
+### Adding Retailers
+
+Edit `src/setup.py` to add more retailers:
+
+```python
+retailers = [
+    Retailer(
+        id="retailer-id",
+        name="Retailer Name",
+        base_url="https://www.retailer.com"
+    ),
+    # Add more retailers here
+]
+```
+
+### Daily Price Tracking Workflow
+
+1. **Manual Entry** (for now):
+   ```bash
+   python add_price.py
+   # Enter: product ID, retailer, price, URL
+   ```
+
+2. **Export & View**:
+   ```bash
+   python export.py
+   # Then open templates/index.html in browser
+   ```
+
+3. **Check for Deals**:
+   - Green-highlighted prices = Below 30-day average
+   - "DEAL" badge = Significantly below average
+   - Yellow box = Savings compared to average price
+
+## Next Steps for Development
+
+### Phase 1: Automated Price Fetching
+- [ ] Implement actual scraping logic in `scraper.py`
+- [ ] Add scheduling (daily price checks)
+- [ ] Handle errors and retries
+
+### Phase 2: Better Analysis
+- [ ] Normalize prices (per-unit comparison for different pack sizes)
+- [ ] Detect fake "was/now" pricing
+- [ ] Track price change velocity
+- [ ] Alert on significant drops
+
+### Phase 3: Deployment
+- [ ] GitHub Pages for static display
+- [ ] GitHub Actions for daily updates
+- [ ] API endpoint for data access
+
+## Technical Notes
+
+### Why SQLite?
+- No server setup needed
+- Perfect for prototype
+- Easy to inspect with DB Browser
+- Can migrate to PostgreSQL later if needed
+
+### Why Manual Entry?
+- Web scraping can violate ToS
+- Avoids legal/technical complications in prototype
+- Easy to test the full pipeline
+- Can switch to APIs or scrapers later
+
+### Scraping Options (Future)
+1. **Official APIs** (best, if available)
+   - Walmart Open API (limited)
+   - Target RedSky API (unofficial)
+   
+2. **Browser Automation**
+   - Selenium for dynamic sites
+   - Playwright for modern approach
+   
+3. **Price Tracking Services**
+   - Camelcamelcamel API (Amazon)
+   - Keepa API (Amazon)
+   - Consider partnerships
+
+## Data Model
+
+### Product
+- `id`: Unique identifier (e.g., "eucerin-eczema-5oz")
+- `name`: Display name
+- `size`: Package size for normalization
+- `category`: For grouping/filtering
+
+### PricePoint
+- `product_id`: Which product
+- `retailer_id`: Which retailer
+- `price`: Actual price
+- `timestamp`: When observed
+- `pack_size`: For multi-packs (1 = single)
+- `advertised_savings`: Claimed discount
+
+### PriceStats
+- Aggregated view over 30 days
+- Min/max/average prices
+- "Good deal" detection logic
+
+## Example Queries
+
+```python
+from database import PriceDatabase
+
+db = PriceDatabase()
+
+# Get stats for a product at a retailer
+stats = db.get_price_stats("eucerin-eczema-5oz", "walmart", days=30)
+print(f"Current: ${stats.current_price:.2f}")
+print(f"Average: ${stats.avg_price:.2f}")
+print(f"Is it a deal? {stats.is_good_deal()}")
+
+# Get price history
+history = db.get_recent_prices("eucerin-eczema-5oz", "walmart", limit=30)
+for point in history:
+    print(f"{point.timestamp}: ${point.price:.2f}")
+```
+
+## Contributing to Your Own Fork
+
+This is designed to be customized for your needs:
+
+1. **Add your products** in `setup.py`
+2. **Adjust "good deal" threshold** in `models.py` (currently 95% of average)
+3. **Customize the display** in `templates/index.html`
+4. **Add more retailers** as needed
+
+## License
+
+MIT License - Use this however you want for your price tracking needs!
