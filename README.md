@@ -1,67 +1,74 @@
 # Price Intelligence Tracker
 
-Exposing price exploitation of people managing chronic health conditions through long-term price tracking and historical analysis.
+Long-term price tracking that teaches strategic thinking about recurring purchases - particularly for chronic condition supplies where necessity meets volatile pricing.
 
-## The Problem
+## The Challenge
 
-People managing chronic conditions - eczema, diabetes, sleep apnea - face a captive market:
+Modern retail conditions us for reactive buying: same-day delivery, "limited time" urgency, algorithmic price changes. For people managing chronic conditions requiring regular supply repurchase, this mindset becomes expensive:
 
-- **Information asymmetry**: Newly diagnosed patients don't know what supplies *should* cost
-- **Urgency over research**: You need CPAP filters NOW, can't wait to comparison shop
-- **Trust exploitation**: Healthcare-adjacent retailers charge 2-3x market rates using medical branding
-- **Cognitive load**: Managing symptoms leaves little energy for price intelligence
-- **Predatory pricing**: Retailers exploit necessity purchases with algorithmic pricing and manufactured urgency
+- **Hand-to-mouth purchasing**: Buy when you run out, at whatever today's price is
+- **Information gaps**: No baseline for what products *should* cost
+- **Manufactured urgency**: "Sale ends tonight" creates pressure to buy now
+- **Cognitive load**: Managing symptoms leaves little bandwidth for price strategy
+- **Trust assumptions**: Healthcare-adjacent retailers use medical branding to justify markup
 
-**Real example:** Clinic-affiliated DME suppliers charge $40 for CPAP filters available online for $12. They bet on patient trust, urgency, and information gaps.
+**Real scenario:** Clinic DME suppliers charge $40 for CPAP filters available online for $12. Newly diagnosed patients don't know to question this, and urgency prevents comparison shopping.
 
 ## What This Does
 
-Instead of chasing today's "deal," this tool builds a historical database of product prices over months and years for **chronic condition supplies**, revealing:
+Instead of reacting to today's price, this tool builds **historical intelligence** over months and years, revealing patterns that enable strategic purchasing:
 
-- **Exploitation patterns**: Is that "medical supplier" charging 3x fair market value?
-- **Real vs. fake sales**: Did that price actually drop 40%, or was it raised last week?
-- **Seasonal patterns**: When do diabetic supplies or skincare products actually go on sale?
-- **Price baselines**: What's a genuinely good price vs. retailer markup?
-- **Long-term trends**: Track inflation and supply chain impacts on necessities
+- **Price baselines**: What's normal, what's markup, what's genuinely low
+- **Seasonal cycles**: When do prices reliably drop? When should you stock up?
+- **Fake sales detection**: Was that "40% off" actually a discount, or theater?
+- **Retailer comparison**: Track the same product across multiple sources over time
+- **Long-term extrapolation**: Small strategic decisions compound into significant annual savings
 
-This isn't about luxury items or discretionary purchases. This is about **restoring power to people who are already dealing with enough**.
+This shifts thinking from "what's cheapest today" to "what's my strategy for the next 6-12 months."
 
 ## Why This Matters
 
-### The Growing Crisis
+### The Retail Conditioning Problem
 
-Healthcare-adjacent supply costs are rising while affected populations grow at epidemic rates:
+Modern e-commerce trains us for immediacy: same-day delivery, flash sales, "buy now" urgency. This works brilliantly for retailers but poorly for consumers managing recurring necessities.
 
-- **Eczema/Dermatitis**: 31.6M Americans (10.1%), with incidence increasing due to environmental factors, microplastics, and chemical sensitivities
-- **Sleep Apnea**: 39M US adults diagnosed (up from 25M in 2017), CPAP supplies costing $500-2000 annually
-- **Diabetes**: 38.4M Americans (11.6%) requiring ongoing supplies, with Type 2 cases growing rapidly
+For chronic condition supplies requiring weekly/monthly repurchase:
+- Buying reactively (when you run out) means accepting whatever today's price is
+- No accumulated knowledge of price patterns or timing
+- Strategic purchasing (stocking up during lows) becomes impossible without data
+- Small price differences (10-20%) compound into hundreds annually
 
-These conditions share common characteristics:
-- Lifelong management required
-- Regular supply repurchase (weekly to monthly)
-- Limited product options that work for each individual
-- Significant price variance across retailers (50-300% markups common)
-- Insurance often doesn't cover OTC management supplies
+### The Strategic Advantage
 
-### The Captive Market
+Historical data enables **thinking in cycles rather than moments**:
 
-When you find a skincare product that doesn't trigger eczema flares, or a CPAP mask that actually seals properly, you're locked into buying it repeatedly - often at whatever price retailers set.
+**Scenario:** CPAP filters you need monthly
+- Reactive buying: $18-28 depending on when you run out = ~$270/year
+- Strategic buying: Stock up when they hit $12 every Q3 = ~$144/year
+- **Savings: $126/year on one product category**
 
-**What newly diagnosed patients don't know:**
-- What supplies *should* cost (baseline pricing)
-- That "clinic suppliers" mark up 2-3x over online retailers
-- That prices fluctuate 30-50% seasonally
-- That buying direct online is safe and legitimate
-- When to stock up vs. when to wait
+Multiply across multiple recurring purchases (eczema cream, contact solution, diabetic strips), and small timing decisions compound significantly.
 
-**What historical data provides:**
-- **Baseline expectations**: "CPAP filters range $8-15, not $40"
-- **Confidence to switch retailers**: "This isn't medical-grade pricing, it's exploitation"
-- **Timing guidance**: "Eczema creams drop 30% every July, stock up then"
-- **Validation**: "I'm not being unreasonable questioning this markup"
-- **One less thing to worry about**: Automated intelligence for people already overwhelmed
+### Growing Market, Growing Relevance
 
-In an era of algorithmic pricing and manufactured urgency, having your own historical price data is a superpower. For people managing chronic conditions, it's also economic survival.
+These conditions are increasing at epidemic rates:
+- **Eczema/Dermatitis**: 31.6M Americans, growing due to environmental factors
+- **Sleep Apnea**: 39M diagnosed (up from 25M in 2017)
+- **Diabetes**: 38.4M requiring ongoing supplies
+
+As these populations grow, so does the value of long-term price intelligence.
+
+### What Historical Data Enables
+
+Rather than "what's cheapest today," you can ask:
+- "When do prices reliably drop for this category?"
+- "Should I stock up now or wait two months?"
+- "Is this 'sale' actually worth buying, or just marketing?"
+- "What's my 12-month supply strategy cost vs. buying hand-to-mouth?"
+
+This isn't about obsessing over pennies. It's about **strategic thinking replacing reactive consumption** - particularly valuable when managing conditions that already demand significant mental bandwidth.
+
+In an era of algorithmic pricing and manufactured urgency, having your own historical price data is a superpower.
 
 ## How It Works
 
@@ -249,4 +256,4 @@ This tool is for personal educational use. Users are responsible for complying w
 
 ---
 
-**The Bottom Line**: In an era of algorithmic pricing and manufactured urgency, having your own historical price data is a superpower. For people managing chronic conditions who are already dealing with enough, this tool removes one more burden - and exposes the retailers exploiting their necessity purchases.
+**The Bottom Line**: In an era of algorithmic pricing and manufactured urgency, having your own historical price data is a superpower. This tool teaches strategic thinking about recurring purchases - turning reactive consumption into informed long-term planning.
