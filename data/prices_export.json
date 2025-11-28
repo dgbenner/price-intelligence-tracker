@@ -1,5 +1,5 @@
 {
-  "generated_at": "2025-11-16T20:31:31.739749",
+  "generated_at": "2025-11-27T19:37:07.401762",
   "products": [
     {
       "id": "eucerin-eczema-5oz",
@@ -15,12 +15,18 @@
           "avg_price": 12.97,
           "is_good_deal": false,
           "savings_vs_avg": 0.0,
-          "observation_count": 1,
-          "last_updated": "2025-11-16T20:31:25.347458",
+          "observation_count": 2,
+          "last_updated": "2025-11-27T19:36:39.298778",
           "history": [
             {
               "price": 12.97,
-              "timestamp": "2025-11-16T20:31:25.347458",
+              "timestamp": "2025-11-16T19:05:05.302712",
+              "pack_size": 1,
+              "advertised_savings": null
+            },
+            {
+              "price": 12.97,
+              "timestamp": "2025-11-27T19:36:39.298778",
               "pack_size": 1,
               "advertised_savings": null
             }
@@ -34,12 +40,18 @@
           "avg_price": 13.49,
           "is_good_deal": false,
           "savings_vs_avg": 0.0,
-          "observation_count": 1,
-          "last_updated": "2025-11-16T20:31:25.347466",
+          "observation_count": 2,
+          "last_updated": "2025-11-27T19:36:39.299005",
           "history": [
             {
               "price": 13.49,
-              "timestamp": "2025-11-16T20:31:25.347466",
+              "timestamp": "2025-11-16T19:05:05.302734",
+              "pack_size": 1,
+              "advertised_savings": 1.0
+            },
+            {
+              "price": 13.49,
+              "timestamp": "2025-11-27T19:36:39.299005",
               "pack_size": 1,
               "advertised_savings": 1.0
             }
@@ -61,12 +73,18 @@
           "avg_price": 21.99,
           "is_good_deal": false,
           "savings_vs_avg": 0.0,
-          "observation_count": 1,
-          "last_updated": "2025-11-16T20:31:25.347469",
+          "observation_count": 2,
+          "last_updated": "2025-11-27T19:36:39.299010",
           "history": [
             {
               "price": 21.99,
-              "timestamp": "2025-11-16T20:31:25.347469",
+              "timestamp": "2025-11-16T19:05:05.302738",
+              "pack_size": 1,
+              "advertised_savings": null
+            },
+            {
+              "price": 21.99,
+              "timestamp": "2025-11-27T19:36:39.299010",
               "pack_size": 1,
               "advertised_savings": null
             }
@@ -80,12 +98,18 @@
           "avg_price": 23.99,
           "is_good_deal": false,
           "savings_vs_avg": 0.0,
-          "observation_count": 1,
-          "last_updated": "2025-11-16T20:31:25.347470",
+          "observation_count": 2,
+          "last_updated": "2025-11-27T19:36:39.299015",
           "history": [
             {
               "price": 23.99,
-              "timestamp": "2025-11-16T20:31:25.347470",
+              "timestamp": "2025-11-16T19:05:05.302741",
+              "pack_size": 1,
+              "advertised_savings": null
+            },
+            {
+              "price": 23.99,
+              "timestamp": "2025-11-27T19:36:39.299015",
               "pack_size": 1,
               "advertised_savings": null
             }

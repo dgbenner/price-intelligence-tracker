@@ -187,7 +187,7 @@
         // Load price data from JSON file
         async function loadPriceData() {
             try {
-                const response = await fetch('../data/prices_export.json');
+                const response = await fetch('/data/prices_export.json');
                 const data = await response.json();
                 renderProducts(data);
             } catch (error) {
