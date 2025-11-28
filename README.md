@@ -1,229 +1,210 @@
-# Price History Companion
+# Price Intelligence Tracker
 
-A standalone price tracking module for comparing products across major retailers (Walmart, Target, Amazon). Built to help identify real deals vs. misleading "sale" prices.
+A long-term price tracking and analysis tool that reveals retail pricing patterns, seasonal trends, and helps consumers make informed purchasing decisions based on historical data rather than marketing hype.
 
-## Current Status: Prototype (2 Products × 2 Retailers)
+## What This Does
 
-This prototype tracks:
-- **Products**: Eucerin Eczema Relief Cream (5oz), Pataday Eye Drops (2.5mL)
-- **Retailers**: Walmart, Target
+Instead of chasing today's "deal," this tool builds a historical database of product prices over months and years, revealing:
+
+- **Real vs. Fake Sales**: Did that item actually drop 40%, or was the price raised last week?
+- **Seasonal Patterns**: When do back-to-school supplies actually go on sale? When's the real Black Friday bottom?
+- **Price Floors & Ceilings**: What's a genuinely good price vs. retailer marketing?
+- **Long-term Trends**: Is this product category getting more expensive over time?
+
+## The Problem We're Solving
+
+Retailers use psychological pricing tactics:
+- Artificially inflating "original" prices to show bigger discounts
+- Creating urgency with "limited time" sales that repeat monthly
+- Strategic pricing around holidays and shopping events
+- Inconsistent pricing across different stores/regions
+
+Without historical data, consumers can't tell if a "deal" is actually a deal. This tool gives you that data.
+
+## How It Works
+
+**Current State:**
+- Manual price entry with web interface
+- SQLite database storing price history with timestamps
+- Visual price charts showing trends over time
+- Deal indicator based on historical average
+
+**Planned Features:**
+- Automated web scraping for hands-free data collection
+- Multi-retailer support (Walmart, Target, Amazon, etc.)
+- Smart scheduling (daily/weekly checks per product)
+- Price alerts when items hit historical lows
+- Export/sharing of trend data
+
+## Why Automated Scraping?
+
+The real value comes from **consistent long-term tracking**:
+- 1 check per day × 730 days = 2 years of pricing intelligence
+- Minimal server impact (respectful, low-frequency requests)
+- Builds data while you're not actively shopping
+- Reveals patterns you'd never catch manually
+
+**Scraping Strategy:**
+- Low-frequency checks (once daily per product)
+- Randomized timing and delays between requests
+- Graceful failure handling (retry tomorrow if blocked)
+- Respects robots.txt and rate limits
+- Focus on public product pages only
+
+## Technical Stack
+
+**Backend:**
+- Python 3.x with Flask
+- SQLite database for price history
+- BeautifulSoup4 + Requests for web scraping
+- Optional: Selenium for JavaScript-heavy sites
+
+**Frontend:**
+- HTML/CSS/JavaScript
+- Chart.js for price visualization
+- Responsive design for mobile tracking
+
+**Deployment:**
+- Raspberry Pi or home server for 24/7 operation
+- Optional: Heroku/Railway for cloud hosting
+- Scheduled tasks via cron or APScheduler
 
 ## Project Structure
 
 ```
-price-tracker/
+price-intelligence-tracker/
 ├── src/
-│   ├── models.py          # Data models (Product, Retailer, PricePoint, PriceStats)
-│   ├── database.py        # SQLite database handler
-│   ├── scraper.py         # Scraper framework (placeholders for now)
-│   ├── setup.py           # Initial database setup
-│   ├── add_price.py       # CLI tool for adding prices manually
-│   └── export.py          # Export data to JSON for web display
-├── data/
-│   ├── prices.db          # SQLite database (created on first run)
-│   └── prices_export.json # JSON export for web display
+│   ├── app.py              # Flask web server
+│   ├── models.py           # Database models (Product, PricePoint)
+│   ├── scrapers/
+│   │   ├── base.py         # Abstract scraper class
+│   │   ├── walmart.py      # Walmart-specific scraper
+│   │   ├── target.py       # Target-specific scraper
+│   │   └── amazon.py       # Amazon scraper (challenging!)
+│   ├── scheduler.py        # Automated scraping jobs
+│   └── utils.py            # Helper functions
+├── static/
+│   ├── css/
+│   └── js/
 ├── templates/
-│   └── index.html         # Web-based price comparison view
-└── requirements.txt       # Python dependencies (minimal for prototype)
+│   ├── index.html          # Dashboard
+│   └── product.html        # Individual product view
+├── data/
+│   └── prices.db           # SQLite database
+├── requirements.txt
+└── README.md
 ```
 
-## Quick Start
-
-### 1. Initial Setup
+## Setup & Installation
 
 ```bash
-# Run setup to create database and add products/retailers
-cd src
-python setup.py
+# Clone the repository
+git clone https://github.com/yourusername/price-intelligence-tracker.git
+cd price-intelligence-tracker
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Initialize database
+python src/models.py
+
+# Run the web interface
+python src/app.py
 ```
 
-This will:
-- Create the SQLite database
-- Add your 2 products
-- Add your 2 retailers
-- Optionally add sample price data for testing
+Visit `http://localhost:5000` to start tracking prices.
 
-### 2. Add Price Data
+## Usage Examples
 
-**Option A: Interactive Mode**
-```bash
-python add_price.py
-```
+**Manual Entry (Current):**
+1. Navigate to product page on retailer site
+2. Copy product URL and current price
+3. Add to tracker via web interface
+4. View historical chart and statistics
 
-**Option B: Quick Add**
-```bash
-python add_price.py eucerin-eczema-5oz walmart 12.97 "https://walmart.com/..."
-```
+**Automated Scraping (Planned):**
+1. Add product URL to tracking list
+2. Configure check frequency (daily recommended)
+3. Scraper runs automatically in background
+4. Review trends and alerts via dashboard
 
-**Option C: Show Current Prices**
-```bash
-python add_price.py show
-```
+## Ethical & Legal Considerations
 
-### 3. View in Browser
+**What's Generally OK:**
+- Scraping public product pages for personal use
+- Respectful, low-frequency automated requests
+- Storing publicly available pricing data
+- Using data for personal purchase decisions
 
-```bash
-# Export data to JSON
-python export.py
+**What to Avoid:**
+- High-frequency scraping that impacts server load
+- Bypassing CAPTCHAs or anti-bot measures aggressively
+- Scraping user accounts or protected content
+- Reselling or redistributing scraped data commercially
 
-# Open the HTML file in your browser
-# On Mac:
-open ../templates/index.html
+**Best Practices:**
+- Always include descriptive User-Agent headers
+- Respect robots.txt directives
+- Add random delays between requests (30-120 seconds)
+- Handle errors gracefully (don't retry-spam)
+- Start with small product lists (5-10 items)
 
-# On Linux:
-xdg-open ../templates/index.html
+## Roadmap
 
-# On Windows:
-start ../templates/index.html
-```
+**Phase 1: Foundation** ✅
+- [x] Basic Flask web interface
+- [x] SQLite database with price history
+- [x] Manual price entry
+- [x] Simple chart visualization
 
-## How to Use
+**Phase 2: Intelligence** (Current)
+- [ ] Automated scraping for 2-3 major retailers
+- [ ] Scheduled daily price checks
+- [ ] Price trend analysis (highs, lows, averages)
+- [ ] Deal quality scoring
 
-### Adding Products
+**Phase 3: Expansion**
+- [ ] Multi-user support
+- [ ] Price alerts (email/SMS when hitting targets)
+- [ ] Mobile app or Progressive Web App
+- [ ] Category-level trend analysis
 
-Edit `src/setup.py` to add more products to track:
+**Phase 4: Advanced**
+- [ ] Machine learning for price prediction
+- [ ] API for third-party integrations
+- [ ] Browser extension for instant tracking
+- [ ] Collaborative pricing database
 
-```python
-products = [
-    Product(
-        id="your-product-id",
-        name="Product Name",
-        size="5 oz",
-        category="skincare"
-    ),
-    # Add more products here
-]
-```
+## Known Limitations
 
-### Adding Retailers
+- **Retailer Changes**: Sites frequently update HTML structure, breaking scrapers
+- **Anti-Bot Measures**: Some retailers actively block automated access
+- **JavaScript Content**: Some prices load dynamically, requiring Selenium
+- **Regional Pricing**: Prices vary by location, requires geo-awareness
+- **Sale Types**: Memberships, coupons, and promo codes add complexity
 
-Edit `src/setup.py` to add more retailers:
+## Contributing
 
-```python
-retailers = [
-    Retailer(
-        id="retailer-id",
-        name="Retailer Name",
-        base_url="https://www.retailer.com"
-    ),
-    # Add more retailers here
-]
-```
+This is a personal learning project, but suggestions and improvements are welcome! Areas that need work:
 
-### Daily Price Tracking Workflow
-
-1. **Manual Entry** (for now):
-   ```bash
-   python add_price.py
-   # Enter: product ID, retailer, price, URL
-   ```
-
-2. **Export & View**:
-   ```bash
-   python export.py
-   # Then open templates/index.html in browser
-   ```
-
-3. **Check for Deals**:
-   - Green-highlighted prices = Below 30-day average
-   - "DEAL" badge = Significantly below average
-   - Yellow box = Savings compared to average price
-
-## Next Steps for Development
-
-### Phase 1: Automated Price Fetching
-- [ ] Implement actual scraping logic in `scraper.py`
-- [ ] Add scheduling (daily price checks)
-- [ ] Handle errors and retries
-
-### Phase 2: Better Analysis
-- [ ] Normalize prices (per-unit comparison for different pack sizes)
-- [ ] Detect fake "was/now" pricing
-- [ ] Track price change velocity
-- [ ] Alert on significant drops
-
-### Phase 3: Deployment
-- [ ] GitHub Pages for static display
-- [ ] GitHub Actions for daily updates
-- [ ] API endpoint for data access
-
-## Technical Notes
-
-### Why SQLite?
-- No server setup needed
-- Perfect for prototype
-- Easy to inspect with DB Browser
-- Can migrate to PostgreSQL later if needed
-
-### Why Manual Entry?
-- Web scraping can violate ToS
-- Avoids legal/technical complications in prototype
-- Easy to test the full pipeline
-- Can switch to APIs or scrapers later
-
-### Scraping Options (Future)
-1. **Official APIs** (best, if available)
-   - Walmart Open API (limited)
-   - Target RedSky API (unofficial)
-   
-2. **Browser Automation**
-   - Selenium for dynamic sites
-   - Playwright for modern approach
-   
-3. **Price Tracking Services**
-   - Camelcamelcamel API (Amazon)
-   - Keepa API (Amazon)
-   - Consider partnerships
-
-## Data Model
-
-### Product
-- `id`: Unique identifier (e.g., "eucerin-eczema-5oz")
-- `name`: Display name
-- `size`: Package size for normalization
-- `category`: For grouping/filtering
-
-### PricePoint
-- `product_id`: Which product
-- `retailer_id`: Which retailer
-- `price`: Actual price
-- `timestamp`: When observed
-- `pack_size`: For multi-packs (1 = single)
-- `advertised_savings`: Claimed discount
-
-### PriceStats
-- Aggregated view over 30 days
-- Min/max/average prices
-- "Good deal" detection logic
-
-## Example Queries
-
-```python
-from database import PriceDatabase
-
-db = PriceDatabase()
-
-# Get stats for a product at a retailer
-stats = db.get_price_stats("eucerin-eczema-5oz", "walmart", days=30)
-print(f"Current: ${stats.current_price:.2f}")
-print(f"Average: ${stats.avg_price:.2f}")
-print(f"Is it a deal? {stats.is_good_deal()}")
-
-# Get price history
-history = db.get_recent_prices("eucerin-eczema-5oz", "walmart", limit=30)
-for point in history:
-    print(f"{point.timestamp}: ${point.price:.2f}")
-```
-
-## Contributing to Your Own Fork
-
-This is designed to be customized for your needs:
-
-1. **Add your products** in `setup.py`
-2. **Adjust "good deal" threshold** in `models.py` (currently 95% of average)
-3. **Customize the display** in `templates/index.html`
-4. **Add more retailers** as needed
+- Scraper implementations for specific retailers
+- Better error handling and retry logic
+- UI/UX improvements
+- Data visualization enhancements
+- Testing and documentation
 
 ## License
 
-MIT License - Use this however you want for your price tracking needs!
+MIT License - See LICENSE file for details
+
+## Disclaimer
+
+This tool is for personal educational use. Users are responsible for complying with retailers' Terms of Service and applicable laws. The author is not responsible for any consequences of web scraping activities.
+
+---
+
+**Why This Matters**: In an era of algorithmic pricing and manufactured urgency, having your own historical price data is a superpower. This tool puts that power in your hands.
