@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Price Intelligence Dashboard - Chronic Condition Supplies</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Price Intelligence Dashboard</h1>
+        <p class="subtitle">Chronic Condition Supply Price Tracker</p>
+        <div class="affiliate-disclosure">
+            <small>Affiliate disclosure: This site earns from qualifying purchases</small>
+        </div>
+    </header>
+
+    <main id="dashboard">
+        <!-- Brand containers will be dynamically inserted here -->
+    </main>
+
+    <!-- Savings Calculator Modal -->
+    <div id="savings-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Savings Calculator</h2>
+            <div id="modal-body">
+                <p id="savings-calculation"></p>
+                <div class="dca-explanation">
+                    <p><strong>What is Dollar Cost Averaging?</strong></p>
+                    <p>Dollar cost averaging means buying regularly at the average price over time, rather than trying to time the market for the absolute lowest price. By tracking prices and buying at the best average price point, you minimize cost while maintaining a consistent supply.</p>
+                    <a href="https://www.investopedia.com/terms/d/dollarcostaveraging.asp" target="_blank" rel="noopener">Learn more about dollar cost averaging</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Template for brand container -->
+    <template id="brand-container-template">
+        <section class="brand-container">
+            <div class="brand-header">
+                <h2 class="brand-name"></h2>
+                <button class="collapse-toggle" aria-label="Toggle products">▼</button>
+            </div>
+            <div class="products-wrapper">
+                <!-- Products will be inserted here -->
+            </div>
+            <div class="container-footer">
+                <p class="overall-best"></p>
+                <button class="info-icon" aria-label="More information">ⓘ</button>
+                <div class="footer-tooltip hidden">
+                    This recommendation is based on the consistently lowest average price across all tracked time periods.
+                </div>
+            </div>
+        </section>
+    </template>
+
+    <!-- Template for product row -->
+    <template id="product-row-template">
+        <article class="product-row">
+            <div class="product-summary">
+                <div class="product-logo-wrapper">
+                    <img class="product-logo" src="" alt="">
+                </div>
+                <h3 class="product-name"></h3>
+                <div class="best-price-callout">
+                    <p class="best-price-text"></p>
+                    <a href="#" class="savings-link">How much can I save?</a>
+                </div>
+            </div>
+
+            <div class="price-chart-wrapper">
+                <canvas class="price-chart"></canvas>
+            </div>
+
+            <div class="retailer-stats">
+                <table class="stats-table">
+                    <thead>
+                        <tr>
+                            <th>Retailer</th>
+                            <th>High</th>
+                            <th>Low</th>
+                            <th>Avg</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Retailer rows will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="product-footer">
+                <p class="product-best-value"></p>
+                <button class="product-info-icon" aria-label="More information">ⓘ</button>
+                <div class="product-tooltip hidden">
+                    This recommendation is based on the consistently lowest average price across all tracked time periods.
+                </div>
+            </div>
+        </article>
+    </template>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
