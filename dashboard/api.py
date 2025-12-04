@@ -14,8 +14,13 @@ from collections import defaultdict
 app = Flask(__name__)
 CORS(app)
 
-# Database path
-DB_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'prices.db')
+# Database path - use absolute path on PythonAnywhere, relative locally
+if os.path.exists('/home/smugsock/price-intelligence-tracker'):
+    # Running on PythonAnywhere
+    DB_PATH = '/home/smugsock/price-intelligence-tracker/data/prices.db'
+else:
+    # Running locally
+    DB_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data', 'prices.db')
 
 def get_db_connection():
     """Create a database connection."""
