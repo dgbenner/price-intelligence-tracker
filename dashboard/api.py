@@ -119,6 +119,7 @@ def get_dashboard_data():
                     'id': product_id,
                     'name': product_name,
                     'brand': brand_name,
+                    'size': product['size'] if product['size'] else '',
                     'bestAvgPrice': best_retailer['avg'],
                     'bestRetailer': best_retailer['name'].capitalize(),
                     'retailers': sorted(retailers_stats, key=lambda x: x['avg']),

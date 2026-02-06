@@ -3,7 +3,7 @@ const RETAILER_COLORS = {
     'amazon': '#FF9900',
     'target': '#CC0000',
     'walgreens': '#E31837',
-    'cvs': '#CC0000',
+    'cvs': '#c4242b',
     'walmart': '#0071CE'
 };
 
@@ -14,6 +14,13 @@ const chartInstances = {};
 document.addEventListener('DOMContentLoaded', async () => {
     await loadDashboard();
     setupModalListeners();
+
+    // Close tooltips when clicking outside
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.callout-tooltip:not(.hidden)').forEach(t => {
+            t.classList.add('hidden');
+        });
+    });
 });
 
 // Load dashboard data
@@ -79,27 +86,57 @@ function renderProduct(product, container) {
     const template = document.getElementById('product-row-template');
     const productElement = template.content.cloneNode(true);
 
-    // Set product name and logo
+    // Set product name and image
     const productName = productElement.querySelector('.product-name');
-    const productLogo = productElement.querySelector('.product-logo');
-    const logoWrapper = productElement.querySelector('.product-logo-wrapper');
+    const productImage = productElement.querySelector('.product-image');
+    const sizeTag = productElement.querySelector('.product-size-tag');
 
     productName.textContent = product.name;
 
-    // Set brand logo
-    if (product.brand) {
-        const brandSlug = product.brand.toLowerCase().replace(/\s+/g, '-');
-        productLogo.src = `images/logos/${brandSlug}.png`;
-        productLogo.alt = `${product.brand} logo`;
-        productLogo.style.display = 'block';
+    // Set product image - try multiple extensions
+    const extensions = ['png', 'jpg', 'webp'];
+    const productId = product.id;
+    productImage.src = `images/products/${productId}.png`;
+    productImage.alt = product.name;
+
+    // Try fallback extensions if the first doesn't load
+    let extIndex = 0;
+    productImage.addEventListener('error', function handler() {
+        extIndex++;
+        if (extIndex < extensions.length) {
+            productImage.src = `images/products/${productId}.${extensions[extIndex]}`;
+        } else {
+            // Final fallback: brand logo
+            if (product.brand) {
+                const brandSlug = product.brand.toLowerCase().replace(/\s+/g, '-');
+                productImage.src = `images/logos/${brandSlug}.png`;
+            }
+            productImage.removeEventListener('error', handler);
+        }
+    });
+
+    // Set size tag
+    if (product.size) {
+        sizeTag.textContent = product.size;
     } else {
-        // Fallback to text if no brand
-        logoWrapper.innerHTML = `<div style="font-weight: 600; color: #666; font-size: 1.2rem;">No Brand</div>`;
+        sizeTag.style.display = 'none';
     }
 
-    // Set best average price
-    const bestPriceText = productElement.querySelector('.best-price-text');
-    bestPriceText.textContent = `$${product.bestAvgPrice.toFixed(2)} at ${product.bestRetailer}`;
+    // Determine "Consistent Best Value" (lowest avg - already sorted, index 0)
+    const bestValueRetailerName = product.retailers[0].name.toLowerCase();
+    const bestValueLogoExt = RETAILER_LOGO_EXT[bestValueRetailerName] || 'png';
+
+    // Determine "Today's Best Price" (lowest most recent price per retailer)
+    const todaysBest = getTodaysBestPrice(product);
+    const todaysBestName = todaysBest.retailer;
+    const todaysBestLogoExt = RETAILER_LOGO_EXT[todaysBestName] || 'png';
+
+    // Populate "Today's Best Price" callout
+    const bestPriceLogo = productElement.querySelector('.callout-best-price .callout-retailer-logo');
+    bestPriceLogo.src = `images/retailers/${todaysBestName}.${todaysBestLogoExt}`;
+    bestPriceLogo.alt = capitalizeFirst(todaysBestName);
+    const calloutPrice = productElement.querySelector('.callout-best-price .callout-price');
+    calloutPrice.innerHTML = priceHtml(todaysBest.price);
 
     // Add savings calculator link
     const savingsLink = productElement.querySelector('.savings-link');
@@ -108,23 +145,54 @@ function renderProduct(product, container) {
         showSavingsModal(product);
     });
 
-    // Set product-level best value footer
-    const productBestValue = productElement.querySelector('.product-best-value');
-    productBestValue.textContent = `Overall best value: ${product.bestRetailer} - consistently lowest average price`;
+    // Populate "Consistent Best Value" callout
+    const bestValueLogo = productElement.querySelector('.callout-best-value .callout-retailer-logo');
+    bestValueLogo.src = `images/retailers/${bestValueRetailerName}.${bestValueLogoExt}`;
+    bestValueLogo.alt = capitalizeFirst(bestValueRetailerName);
+    const bestValuePrice = productElement.querySelector('.callout-best-value .callout-price');
+    bestValuePrice.innerHTML = priceHtml(product.retailers[0].avg);
 
-    // Add tooltip toggle for product footer
-    const productInfoIcon = productElement.querySelector('.product-info-icon');
-    const productTooltip = productElement.querySelector('.product-tooltip');
-    productInfoIcon.addEventListener('click', (e) => {
-        e.stopPropagation();
-        productTooltip.classList.toggle('hidden');
+    // Calculate number of days tracked for the subtitle
+    const bestRetailerChart = product.chartData.find(
+        rd => rd.retailer === bestValueRetailerName
+    );
+    let daysTracked = 0;
+    if (bestRetailerChart && bestRetailerChart.prices.length > 1) {
+        const dates = bestRetailerChart.prices.map(p => new Date(p.date));
+        const earliest = Math.min(...dates);
+        const latest = Math.max(...dates);
+        daysTracked = Math.round((latest - earliest) / (1000 * 60 * 60 * 24));
+    }
+    const subtitle = productElement.querySelector('.callout-subtitle');
+    subtitle.textContent = daysTracked > 0
+        ? `average price over ${daysTracked} days`
+        : `average price`;
+
+    // Add tooltip toggles for both callout cards
+    productElement.querySelectorAll('.callout-card').forEach(card => {
+        const infoBtn = card.querySelector('.callout-info');
+        const tooltip = card.querySelector('.callout-tooltip');
+        infoBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            // Close any other open tooltips first
+            document.querySelectorAll('.callout-tooltip:not(.hidden)').forEach(t => {
+                if (t !== tooltip) t.classList.add('hidden');
+            });
+            tooltip.classList.toggle('hidden');
+        });
     });
 
-    // Render retailer stats
+    // Render retailer stats (retailers are already sorted by avg, first is best)
     const statsBody = productElement.querySelector('.stats-table tbody');
-    product.retailers.forEach(retailer => {
-        renderRetailerRow(retailer, statsBody);
+    product.retailers.forEach((retailer, index) => {
+        const isBestValue = index === 0;
+        const isTodaysBest = retailer.name.toLowerCase() === todaysBestName;
+        renderRetailerRow(retailer, statsBody, isBestValue, isTodaysBest);
     });
+
+    // Render trend insights
+    const insightsScroll = productElement.querySelector('.insights-scroll');
+    renderInsights(product, insightsScroll);
 
     // Get reference to the canvas before appending
     const canvas = productElement.querySelector('.price-chart');
@@ -152,19 +220,27 @@ function renderChart(canvas, product) {
         return;
     }
 
-    // Prepare datasets for each retailer
-    const datasets = product.chartData.map(retailerData => ({
-        label: capitalizeFirst(retailerData.retailer),
-        data: retailerData.prices.map(p => ({
-            x: new Date(p.date),
-            y: p.price
-        })),
-        borderColor: RETAILER_COLORS[retailerData.retailer] || '#666',
-        backgroundColor: RETAILER_COLORS[retailerData.retailer] || '#666',
-        tension: 0.1,
-        pointRadius: 4,
-        pointHoverRadius: 6
-    }));
+    // Build datasets - always include all 5 retailers in legend
+    const ALL_RETAILERS = ['amazon', 'cvs', 'target', 'walgreens', 'walmart'];
+    const chartDataMap = {};
+    product.chartData.forEach(rd => { chartDataMap[rd.retailer] = rd; });
+
+    const datasets = ALL_RETAILERS.map(retailer => {
+        const retailerData = chartDataMap[retailer];
+        return {
+            label: capitalizeFirst(retailer),
+            data: retailerData ? retailerData.prices.map(p => ({
+                x: new Date(p.date),
+                y: p.price
+            })) : [],
+            borderColor: RETAILER_COLORS[retailer] || '#666',
+            backgroundColor: RETAILER_COLORS[retailer] || '#666',
+            tension: 0.1,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            borderDash: retailerData ? [] : [5, 5]
+        };
+    });
 
     // Create chart
     let chart;
@@ -177,13 +253,18 @@ function renderChart(canvas, product) {
         options: {
             responsive: true,
             maintainAspectRatio: true,
-            aspectRatio: 2,
+            aspectRatio: 1.65,
+            layout: {
+                padding: { bottom: -5 }
+            },
             plugins: {
                 legend: {
                     position: 'bottom',
                     labels: {
                         usePointStyle: true,
-                        padding: 15
+                        padding: 25,
+                        boxWidth: 5,
+                        font: { size: 11 }
                     }
                 },
                 tooltip: {
@@ -206,8 +287,7 @@ function renderChart(canvas, product) {
                         }
                     },
                     title: {
-                        display: true,
-                        text: 'Date'
+                        display: false
                     }
                 },
                 y: {
@@ -239,27 +319,54 @@ function renderChart(canvas, product) {
     }
 }
 
+// Retailer logo file extensions
+const RETAILER_LOGO_EXT = {
+    'walmart': 'svg',
+    'target': 'jpg',
+    'amazon': 'png',
+    'walgreens': 'png',
+    'cvs': 'png'
+};
+
 // Render retailer statistics row
-function renderRetailerRow(retailer, tbody) {
+function renderRetailerRow(retailer, tbody, isBestValue, isTodaysBest) {
     const row = document.createElement('tr');
+    const name = retailer.name.toLowerCase();
+    const ext = RETAILER_LOGO_EXT[name] || 'png';
+
+    // Button color: blue (consistent value) overrides green (today's best)
+    let btnClass = 'buy-button';
+    if (isBestValue) btnClass = 'buy-button consistent-value';
+    else if (isTodaysBest) btnClass = 'buy-button todays-best';
 
     row.innerHTML = `
-        <td><span class="retailer-name ${retailer.name.toLowerCase()}">${capitalizeFirst(retailer.name)}</span></td>
-        <td>
-            $${retailer.high.toFixed(2)}
+        <td><img class="retailer-logo" src="images/retailers/${name}.${ext}" alt="${capitalizeFirst(retailer.name)}"></td>
+        <td class="price-cell">
+            ${priceHtml(retailer.high)}
             <span class="price-date">${formatDate(retailer.highDate)}</span>
         </td>
-        <td>
-            $${retailer.low.toFixed(2)}
+        <td class="price-cell">
+            ${priceHtml(retailer.low)}
             <span class="price-date">${formatDate(retailer.lowDate)}</span>
         </td>
-        <td>$${retailer.avg.toFixed(2)}</td>
+        <td class="avg-cell">${priceHtml(retailer.avg)}</td>
         <td>
-            <a href="${retailer.url}" target="_blank" rel="noopener nofollow" class="buy-button">Buy Now</a>
+            <a href="${retailer.url}" target="_blank" rel="noopener nofollow" class="${btnClass}">Buy Now</a>
         </td>
     `;
 
     tbody.appendChild(row);
+
+    // Add tag row underneath if this retailer has any designations
+    if (isTodaysBest || isBestValue) {
+        const tagRow = document.createElement('tr');
+        tagRow.className = 'tag-row';
+        let tags = '';
+        if (isTodaysBest) tags += '<span class="retailer-tag todays-best-tag"><span class="tag-check">✓</span> Today\'s Best Price</span>';
+        if (isBestValue) tags += '<span class="retailer-tag consistent-tag"><span class="tag-check tag-check-blue">✓</span> Consistent Best Value</span>';
+        tagRow.innerHTML = `<td colspan="5" class="tag-cell">${tags}</td>`;
+        tbody.appendChild(tagRow);
+    }
 }
 
 // Show savings calculator modal
@@ -277,10 +384,10 @@ function showSavingsModal(product) {
 
     calculation.innerHTML = `
         <strong>Potential Savings Analysis</strong><br><br>
-        Buying at the best average price of <strong>$${bestAvg.toFixed(2)}</strong>
-        instead of the worst average of <strong>$${worstAvg.toFixed(2)}</strong>
-        saves you <strong>$${monthlySavings.toFixed(2)}</strong> per purchase.<br><br>
-        If purchased monthly, that's <strong>$${yearlySavings.toFixed(2)} saved per year!</strong>
+        Buying at the best average price of <strong>${priceHtml(bestAvg)}</strong>
+        instead of the worst average of <strong>${priceHtml(worstAvg)}</strong>
+        saves you <strong>${priceHtml(monthlySavings)}</strong> per purchase.<br><br>
+        If purchased monthly, that's <strong>${priceHtml(yearlySavings)} saved per year!</strong>
     `;
 
     modal.classList.add('show');
@@ -309,12 +416,107 @@ function setupModalListeners() {
     });
 }
 
+// Get today's best price (lowest most recent price across retailers)
+function getTodaysBestPrice(product) {
+    let bestRetailer = null;
+    let bestPrice = Infinity;
+
+    product.chartData.forEach(rd => {
+        if (rd.prices.length > 0) {
+            // Get the most recent price for this retailer
+            const latest = rd.prices[rd.prices.length - 1];
+            if (latest.price < bestPrice) {
+                bestPrice = latest.price;
+                bestRetailer = rd.retailer;
+            }
+        }
+    });
+
+    return { retailer: bestRetailer, price: bestPrice };
+}
+
+// Placeholder trend insights per retailer
+const TREND_INSIGHTS = [
+    {
+        retailer: 'amazon',
+        text: 'Amazon appears to adjust pricing on this category in early December, possibly tied to holiday fulfillment cost changes. Prices rose ~8% before stabilizing in January.',
+        confidence: 22,
+        date: 'Observed Dec 2025'
+    },
+    {
+        retailer: 'walgreens',
+        text: 'Walgreens shows a pattern of dropping prices during summer months (Jun\u2013Aug), possibly due to seasonal promotions or inventory cycling.',
+        confidence: 18,
+        date: 'Observed Jul\u2013Aug 2025'
+    },
+    {
+        retailer: 'cvs',
+        text: 'CVS pricing spiked after an apparent stock shortage. When inventory was restored, prices settled ~3% above pre-shortage levels rather than returning to baseline.',
+        confidence: 30,
+        date: 'Observed Oct 2025'
+    },
+    {
+        retailer: 'walmart',
+        text: 'Walmart maintains the most stable pricing of all tracked retailers. Price variance is under 2% across the full tracking period, suggesting centralized price management.',
+        confidence: 55,
+        date: 'Ongoing observation'
+    },
+    {
+        retailer: 'target',
+        text: 'Target tends to match Amazon\u2019s price within 48\u201372 hours of a change, but rarely initiates price movements independently.',
+        confidence: 15,
+        date: 'Observed Nov\u2013Dec 2025'
+    }
+];
+
+// Render trend insight cards for a product
+function renderInsights(product, container) {
+    // Get which retailers this product has data for
+    const activeRetailers = new Set(product.chartData.map(rd => rd.retailer));
+
+    // Filter insights to only relevant retailers, sort by confidence descending
+    const relevant = TREND_INSIGHTS.filter(i => activeRetailers.has(i.retailer))
+        .sort((a, b) => b.confidence - a.confidence);
+
+    relevant.forEach(insight => {
+        const color = RETAILER_COLORS[insight.retailer] || '#999';
+        const card = document.createElement('div');
+        card.className = 'insight-card';
+        card.style.borderLeftColor = color;
+
+        // Determine confidence color
+        let confColor = '#e57373'; // red/low
+        if (insight.confidence >= 50) confColor = '#4caf50'; // green/high
+        else if (insight.confidence >= 30) confColor = '#ffb74d'; // orange/medium
+
+        card.innerHTML = `
+            <div class="insight-card-header">
+                <span class="insight-retailer" style="color: ${color}">${capitalizeFirst(insight.retailer)}</span>
+                <div class="insight-confidence">
+                    <div class="confidence-bar">
+                        <div class="confidence-fill" style="width: ${insight.confidence}%; background-color: ${confColor}"></div>
+                    </div>
+                    <span class="confidence-value">${insight.confidence}%</span>
+                </div>
+            </div>
+            <p class="insight-text">${insight.text}</p>
+            <span class="insight-date">${insight.date}</span>
+        `;
+
+        container.appendChild(card);
+    });
+}
+
 // Utility functions
+function priceHtml(value) {
+    return `<span class="dollar">$</span>${value.toFixed(2)}`;
+}
+
 function capitalizeFirst(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 function formatDate(dateString) {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    return `${date.getMonth() + 1}-${date.getDate()}-${date.getFullYear()}`;
 }

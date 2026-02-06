@@ -9,7 +9,7 @@
     --color-amazon: #FF9900;
     --color-target: #CC0000;
     --color-walgreens: #E31837;
-    --color-cvs: #CC0000;
+    --color-cvs: #c4242b;
     --color-walmart: #0071CE;
     --bg-light: #f5f5f5;
     --bg-white: #ffffff;
@@ -133,21 +133,35 @@ header h1 {
     gap: 1rem;
 }
 
-.product-logo-wrapper {
+.product-image-wrapper {
     width: 100%;
-    aspect-ratio: 3 / 1;
+    aspect-ratio: 1 / 1;
     background-color: var(--bg-light);
-    border-radius: 4px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    position: relative;
 }
 
-.product-logo {
-    max-width: 100%;
-    max-height: 100%;
+.product-image {
+    max-width: 85%;
+    max-height: 85%;
     object-fit: contain;
+}
+
+.product-size-tag {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 3px;
+    letter-spacing: 0.02em;
 }
 
 .product-name {
@@ -155,25 +169,160 @@ header h1 {
     font-weight: 500;
 }
 
-.best-price-callout {
-    padding: 1rem;
-    background-color: #e8f5e9;
-    border-radius: 4px;
-    border-left: 4px solid #4caf50;
+/* Callout Pair */
+.callout-pair {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
-.best-price-text {
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: #2e7d32;
+.callout-card {
+    padding: 0.75rem 1rem;
+    background-color: #e8f5e9;
+    border-radius: 6px;
+    border-left: 4px solid #4caf50;
+    position: relative;
+}
+
+.callout-best-value {
+    background-color: #e3f2fd;
+    border-left-color: #1565c0;
+}
+
+.callout-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     margin-bottom: 0.5rem;
 }
 
+.callout-check {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background-color: #4caf50;
+    color: white;
+    border-radius: 50%;
+    font-size: 0.7rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.callout-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #2e7d32;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    flex: 1;
+}
+
+.callout-best-value .callout-check {
+    background-color: #1565c0;
+}
+
+.callout-best-value .callout-label {
+    color: #1565c0;
+}
+
+.callout-info {
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    cursor: pointer;
+    color: #689f6a;
+    transition: color 0.3s;
+    flex-shrink: 0;
+    padding: 0;
+    line-height: 1;
+}
+
+.callout-info:hover {
+    color: #2e7d32;
+}
+
+.callout-best-value .callout-info {
+    color: #64b5f6;
+}
+
+.callout-best-value .callout-info:hover {
+    color: #1565c0;
+}
+
+.callout-body {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.callout-retailer-logo {
+    height: 18px;
+    width: auto;
+    max-width: 70px;
+    object-fit: contain;
+}
+
+.callout-price {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2e7d32;
+}
+
+.callout-best-value .callout-price {
+    color: #1565c0;
+}
+
+.callout-subtitle {
+    display: block;
+    font-size: 0.75rem;
+    color: #558b55;
+    margin-top: 0.2rem;
+}
+
+.callout-best-value .callout-subtitle {
+    color: #5c9bd6;
+}
+
+.callout-tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: 4px;
+    max-width: 260px;
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+    box-shadow: var(--shadow-hover);
+    z-index: 10;
+    line-height: 1.4;
+}
+
+.callout-tooltip.hidden {
+    display: none;
+}
+
+.callout-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 8px solid transparent;
+    border-top-color: #333;
+}
+
 .savings-link {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: #1976d2;
     text-decoration: none;
     cursor: pointer;
+    display: inline-block;
+    margin-top: 0.25rem;
 }
 
 .savings-link:hover {
@@ -183,8 +332,8 @@ header h1 {
 /* Price Chart (Center Section) */
 .price-chart-wrapper {
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
+    align-items: stretch;
     padding: 1rem;
     background-color: var(--bg-light);
     border-radius: 4px;
@@ -211,70 +360,275 @@ header h1 {
     padding: 0.75rem 0.5rem;
     text-align: left;
     font-weight: 600;
+    font-size: 0.63rem;
     border-bottom: 2px solid var(--border-color);
 }
 
 .stats-table td {
     padding: 0.75rem 0.5rem;
     border-bottom: 1px solid var(--border-color);
+    vertical-align: top;
 }
 
 .stats-table tbody tr:last-child td {
     border-bottom: none;
 }
 
-.retailer-name {
-    font-weight: 600;
-    padding-left: 0.5rem;
-    border-left: 4px solid;
+.retailer-logo {
+    height: 20px;
+    width: auto;
+    max-width: 80px;
+    object-fit: contain;
+    vertical-align: top;
+    margin-top: 6px;
 }
 
-.retailer-name.amazon {
-    border-left-color: var(--color-amazon);
-    color: var(--color-amazon);
+.dollar {
+    font-size: 0.7em;
+    vertical-align: super;
+    line-height: 0;
+    margin-right: 0.03em;
 }
 
-.retailer-name.target {
-    border-left-color: var(--color-target);
-    color: var(--color-target);
-}
-
-.retailer-name.walgreens {
-    border-left-color: var(--color-walgreens);
-    color: var(--color-walgreens);
-}
-
-.retailer-name.cvs {
-    border-left-color: var(--color-cvs);
-    color: var(--color-cvs);
-}
-
-.retailer-name.walmart {
-    border-left-color: var(--color-walmart);
-    color: var(--color-walmart);
+.price-cell {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.03em;
+    vertical-align: top;
 }
 
 .price-date {
-    font-size: 0.75rem;
+    font-size: 0.525rem;
     color: var(--text-secondary);
     display: block;
+    text-align: right;
+    margin-top: -0.15rem;
+}
+
+/* Tag rows under retailer stats */
+.tag-row td {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.tag-cell {
+    text-align: center;
+    padding-top: 0 !important;
+    padding-bottom: 0.5rem !important;
+}
+
+.retailer-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.49rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    margin: 0 0.4rem;
+}
+
+.todays-best-tag {
+    color: #2e7d32;
+}
+
+.consistent-tag {
+    color: #1565c0;
+}
+
+.tag-check {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 10px;
+    height: 10px;
+    background-color: #4caf50;
+    color: white;
+    border-radius: 50%;
+    font-size: 0.375rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.tag-check-blue {
+    background-color: #1565c0;
 }
 
 .buy-button {
-    background-color: #4caf50;
+    background-color: #999;
     color: white;
     border: none;
-    padding: 0.5rem 1rem;
+    padding: 0.3rem 0.6rem;
     border-radius: 4px;
     cursor: pointer;
     font-weight: 600;
+    font-size: 0.75rem;
     transition: background-color 0.3s;
     text-decoration: none;
     display: inline-block;
+    white-space: nowrap;
 }
 
 .buy-button:hover {
+    background-color: #777;
+}
+
+.buy-button.todays-best {
+    background-color: #4caf50;
+}
+
+.buy-button.todays-best:hover {
     background-color: #45a049;
+}
+
+.buy-button.consistent-value {
+    background-color: #1565c0;
+}
+
+.buy-button.consistent-value:hover {
+    background-color: #0d47a1;
+}
+
+.stats-table .th-price {
+    text-align: center;
+}
+
+.avg-cell {
+    font-weight: 700;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.03em;
+    vertical-align: top;
+}
+
+/* Remove border between data row and its tag row */
+.stats-table tbody tr:has(+ .tag-row) td {
+    border-bottom: none;
+    padding-bottom: 0.35rem;
+}
+
+/* Trend Insights Section */
+.trend-insights {
+    border-top: 1px solid var(--border-color);
+    margin-top: 40px;
+    padding-top: 10px;
+}
+
+.insights-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.insights-title {
+    font-size: 0.6rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.insights-badge {
+    font-size: 0.45rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background-color: #7c4dff;
+    color: white;
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+}
+
+.insights-scroll {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.4rem;
+    scroll-snap-type: x mandatory;
+}
+
+.insights-scroll::-webkit-scrollbar {
+    height: 3px;
+}
+
+.insights-scroll::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 2px;
+}
+
+.insights-scroll::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 2px;
+}
+
+.insight-card {
+    flex: 0 0 220px;
+    height: 180px;
+    scroll-snap-align: start;
+    background-color: white;
+    border-radius: 6px;
+    padding: 0.6rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    border-left: 3px solid #999;
+    overflow: hidden;
+}
+
+.insight-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.insight-retailer {
+    font-size: 0.55rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.insight-confidence {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex-shrink: 0;
+}
+
+.confidence-bar {
+    width: 32px;
+    height: 3px;
+    background-color: #e0e0e0;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.confidence-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+.confidence-value {
+    font-size: 0.5rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+}
+
+.insight-text {
+    font-size: 0.6rem;
+    line-height: 1.4;
+    color: var(--text-primary);
+    margin: 0;
+    flex: 1;
+    overflow: hidden;
+}
+
+.insight-date {
+    font-size: 0.5rem;
+    color: var(--text-secondary);
+    margin-top: auto;
 }
 
 /* Container Footer */
@@ -336,66 +690,6 @@ header h1 {
     border-top-color: #333;
 }
 
-/* Product Footer */
-.product-footer {
-    background-color: #f0f7f0;
-    padding: 1rem 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    position: relative;
-}
-
-.product-best-value {
-    font-weight: 600;
-    color: #2e7d32;
-    flex: 1;
-    max-width: 80%;
-}
-
-.product-info-icon {
-    background: none;
-    border: none;
-    font-size: 1.2rem;
-    cursor: pointer;
-    color: var(--text-secondary);
-    transition: color 0.3s;
-    flex-shrink: 0;
-}
-
-.product-info-icon:hover {
-    color: var(--text-primary);
-}
-
-.product-tooltip {
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #333;
-    color: white;
-    padding: 1rem;
-    border-radius: 4px;
-    max-width: 300px;
-    font-size: 0.9rem;
-    margin-bottom: 0.5rem;
-    box-shadow: var(--shadow-hover);
-    z-index: 10;
-}
-
-.product-tooltip.hidden {
-    display: none;
-}
-
-.product-tooltip::after {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 8px solid transparent;
-    border-top-color: #333;
-}
 
 /* Modal */
 .modal {
@@ -569,8 +863,8 @@ header h1 {
         padding: 0.75rem;
     }
 
-    .best-price-text {
-        font-size: 1.1rem;
+    .callout-price {
+        font-size: 1rem;
     }
 
     .container-footer {
@@ -583,17 +877,9 @@ header h1 {
         transform: none;
     }
 
-    .product-footer {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .product-best-value {
-        max-width: 100%;
-    }
-
-    .product-tooltip {
+    .callout-tooltip {
         left: 1rem;
+        right: 1rem;
         transform: none;
     }
 }

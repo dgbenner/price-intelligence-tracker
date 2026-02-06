@@ -10,9 +10,9 @@
     <header>
         <h1>Price Intelligence Dashboard</h1>
         <p class="subtitle">Chronic Condition Supply Price Tracker</p>
-        <div class="affiliate-disclosure">
+        <!-- <div class="affiliate-disclosure">
             <small>Affiliate disclosure: This site earns from qualifying purchases</small>
-        </div>
+        </div> -->
     </header>
 
     <main id="dashboard">
@@ -52,18 +52,56 @@
     <template id="product-row-template">
         <article class="product-row">
             <div class="product-summary">
-                <div class="product-logo-wrapper">
-                    <img class="product-logo" src="" alt="">
+                <div class="product-image-wrapper">
+                    <img class="product-image" src="" alt="">
+                    <span class="product-size-tag"></span>
                 </div>
                 <h3 class="product-name"></h3>
-                <div class="best-price-callout">
-                    <p class="best-price-text"></p>
-                    <a href="#" class="savings-link">How much can I save?</a>
+                <div class="callout-pair">
+                    <div class="callout-card callout-best-price">
+                        <div class="callout-header">
+                            <span class="callout-check">✓</span>
+                            <span class="callout-label">Today's Best Price</span>
+                            <button class="callout-info" aria-label="About today's best price">ⓘ</button>
+                        </div>
+                        <div class="callout-body">
+                            <img class="callout-retailer-logo" src="" alt="">
+                            <span class="callout-price"></span>
+                        </div>
+                        <a href="#" class="savings-link">How much can I save?</a>
+                        <div class="callout-tooltip hidden">
+                            Today's best price shows the lowest current price among all tracked retailers for this product.
+                        </div>
+                    </div>
+                    <div class="callout-card callout-best-value">
+                        <div class="callout-header">
+                            <span class="callout-check">✓</span>
+                            <span class="callout-label">Consistent Best Value</span>
+                            <button class="callout-info" aria-label="About consistent best value">ⓘ</button>
+                        </div>
+                        <div class="callout-body">
+                            <img class="callout-retailer-logo" src="" alt="">
+                            <span class="callout-price"></span>
+                        </div>
+                        <span class="callout-subtitle"></span>
+                        <div class="callout-tooltip hidden">
+                            Consistent best value is determined by the lowest average price across all tracked time periods.
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div class="price-chart-wrapper">
                 <canvas class="price-chart"></canvas>
+                <div class="trend-insights">
+                    <div class="insights-header">
+                        <span class="insights-title">Emerging Patterns & Insights</span>
+                        <span class="insights-badge">Beta</span>
+                    </div>
+                    <div class="insights-scroll">
+                        <!-- Insight cards will be inserted here -->
+                    </div>
+                </div>
             </div>
 
             <div class="retailer-stats">
@@ -71,24 +109,16 @@
                     <thead>
                         <tr>
                             <th>Retailer</th>
-                            <th>High</th>
-                            <th>Low</th>
-                            <th>Avg</th>
-                            <th>Action</th>
+                            <th class="th-price">High</th>
+                            <th class="th-price">Low</th>
+                            <th class="th-price">Avg</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
                         <!-- Retailer rows will be inserted here -->
                     </tbody>
                 </table>
-            </div>
-
-            <div class="product-footer">
-                <p class="product-best-value"></p>
-                <button class="product-info-icon" aria-label="More information">ⓘ</button>
-                <div class="product-tooltip hidden">
-                    This recommendation is based on the consistently lowest average price across all tracked time periods.
-                </div>
             </div>
         </article>
     </template>
