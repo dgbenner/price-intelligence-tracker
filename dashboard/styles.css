@@ -339,6 +339,42 @@ header h1 {
     border-radius: 4px;
 }
 
+/* Time Range Controls */
+.time-range-controls {
+    display: flex;
+    gap: 0;
+    margin-bottom: 0.5rem;
+    align-self: flex-end;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.range-btn {
+    background-color: var(--bg-white);
+    border: none;
+    border-right: 1px solid var(--border-color);
+    padding: 0.2rem 0.5rem;
+    font-size: 0.6rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.range-btn:last-child {
+    border-right: none;
+}
+
+.range-btn:hover {
+    background-color: #e8e8e8;
+}
+
+.range-btn.active {
+    background-color: var(--text-primary);
+    color: white;
+}
+
 .price-chart {
     max-width: 100%;
     max-height: 300px;

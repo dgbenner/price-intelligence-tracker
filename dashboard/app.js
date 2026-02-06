@@ -10,6 +10,9 @@ const RETAILER_COLORS = {
 // Store chart instances for cleanup
 const chartInstances = {};
 
+// Store product data keyed by product ID for chart re-rendering
+const productDataStore = {};
+
 // Initialize dashboard on page load
 document.addEventListener('DOMContentLoaded', async () => {
     await loadDashboard();
@@ -197,18 +200,35 @@ function renderProduct(product, container) {
     // Get reference to the canvas before appending
     const canvas = productElement.querySelector('.price-chart');
 
+    // Store product data for re-rendering on range change
+    productDataStore[product.id] = product;
+
     // Append to DOM first
     container.appendChild(productElement);
+
+    // Wire up time range buttons
+    const chartWrapper = canvas.closest('.price-chart-wrapper');
+    const rangeButtons = chartWrapper.querySelectorAll('.range-btn');
+    rangeButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            // Update active state
+            rangeButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            // Re-render chart with selected range
+            const range = btn.dataset.range;
+            renderChart(canvas, product, range);
+        });
+    });
 
     // Then render chart after element is fully in DOM
     // Use requestAnimationFrame to ensure DOM is ready
     requestAnimationFrame(() => {
-        renderChart(canvas, product);
+        renderChart(canvas, product, 'all');
     });
 }
 
-// Render price chart
-function renderChart(canvas, product) {
+// Render price chart with optional time range filter
+function renderChart(canvas, product, range) {
     if (!canvas) {
         console.error('Canvas element not found');
         return;
@@ -220,6 +240,23 @@ function renderChart(canvas, product) {
         return;
     }
 
+    // Destroy existing chart instance if re-rendering
+    if (chartInstances[product.id]) {
+        chartInstances[product.id].destroy();
+        delete chartInstances[product.id];
+    }
+
+    // Calculate time range bounds
+    const now = new Date();
+    let rangeMin = null;
+    const rangeMax = now;
+
+    if (range && range !== 'all') {
+        const days = parseInt(range);
+        rangeMin = new Date(now);
+        rangeMin.setDate(rangeMin.getDate() - days);
+    }
+
     // Build datasets - always include all 5 retailers in legend
     const ALL_RETAILERS = ['amazon', 'cvs', 'target', 'walgreens', 'walmart'];
     const chartDataMap = {};
@@ -227,12 +264,15 @@ function renderChart(canvas, product) {
 
     const datasets = ALL_RETAILERS.map(retailer => {
         const retailerData = chartDataMap[retailer];
+        let points = [];
+        if (retailerData) {
+            points = retailerData.prices
+                .map(p => ({ x: new Date(p.date), y: p.price }))
+                .filter(p => !rangeMin || p.x >= rangeMin);
+        }
         return {
             label: capitalizeFirst(retailer),
-            data: retailerData ? retailerData.prices.map(p => ({
-                x: new Date(p.date),
-                y: p.price
-            })) : [],
+            data: points,
             borderColor: RETAILER_COLORS[retailer] || '#666',
             backgroundColor: RETAILER_COLORS[retailer] || '#666',
             tension: 0.1,
@@ -241,6 +281,26 @@ function renderChart(canvas, product) {
             borderDash: retailerData ? [] : [5, 5]
         };
     });
+
+    // Build x-axis config with fixed bounds
+    const xScaleConfig = {
+        type: 'time',
+        time: {
+            unit: 'day',
+            displayFormats: {
+                day: 'MMM d'
+            }
+        },
+        title: {
+            display: false
+        }
+    };
+
+    // Set fixed min/max so all charts share the same width for the selected range
+    if (rangeMin) {
+        xScaleConfig.min = rangeMin.toISOString();
+        xScaleConfig.max = rangeMax.toISOString();
+    }
 
     // Create chart
     let chart;
@@ -278,18 +338,7 @@ function renderChart(canvas, product) {
                 }
             },
             scales: {
-                x: {
-                    type: 'time',
-                    time: {
-                        unit: 'day',
-                        displayFormats: {
-                            day: 'MMM d'
-                        }
-                    },
-                    title: {
-                        display: false
-                    }
-                },
+                x: xScaleConfig,
                 y: {
                     beginAtZero: false,
                     title: {
