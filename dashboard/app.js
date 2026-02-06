@@ -2,8 +2,8 @@
 const RETAILER_COLORS = {
     'amazon': '#FF9900',
     'target': '#CC0000',
-    'walgreens': '#E31837',
-    'cvs': '#c4242b',
+    'walgreens': '#7B1FA2',
+    'cvs': '#E91E63',
     'walmart': '#0071CE'
 };
 
@@ -12,6 +12,18 @@ const chartInstances = {};
 
 // Store product data keyed by product ID for chart re-rendering
 const productDataStore = {};
+
+// Global date range across all products (for normalizing "All" view)
+let globalDateRange = { min: null, max: null };
+
+// Deactivated datasets per product (productId -> Set of retailer names)
+const deactivatedDatasets = {};
+const DEACTIVATED_COLOR = '#d0d0d0';
+
+// Per-product default time range overrides (defaults to 'all' if not listed)
+const DEFAULT_RANGE_OVERRIDES = {
+    'eucerin-advanced-repair-lotion-16.9oz': '60'
+};
 
 // Initialize dashboard on page load
 document.addEventListener('DOMContentLoaded', async () => {
@@ -46,6 +58,20 @@ async function loadDashboard() {
             dashboard.innerHTML = '<div class="loading">No price data available yet. Please check back after the first data collection run.</div>';
             return;
         }
+
+        // Compute global date range across all products
+        globalDateRange = { min: null, max: null };
+        data.brands.forEach(brand => {
+            brand.products.forEach(product => {
+                product.chartData.forEach(rd => {
+                    rd.prices.forEach(p => {
+                        const d = new Date(p.date);
+                        if (!globalDateRange.min || d < globalDateRange.min) globalDateRange.min = d;
+                        if (!globalDateRange.max || d > globalDateRange.max) globalDateRange.max = d;
+                    });
+                });
+            });
+        });
 
         // Render each brand container
         data.brands.forEach(brand => {
@@ -220,10 +246,60 @@ function renderProduct(product, container) {
         });
     });
 
+    // Build HTML legend with toggle controls
+    const legendContainer = chartWrapper.querySelector('.chart-legend');
+    const ALL_RETAILERS_LEGEND = ['amazon', 'cvs', 'target', 'walgreens', 'walmart'];
+    deactivatedDatasets[product.id] = new Set();
+
+    ALL_RETAILERS_LEGEND.forEach(retailer => {
+        const item = document.createElement('span');
+        item.className = 'legend-item';
+        item.dataset.retailer = retailer;
+
+        const dot = document.createElement('span');
+        dot.className = 'legend-dot';
+        dot.style.backgroundColor = RETAILER_COLORS[retailer];
+
+        const check = document.createElement('span');
+        check.className = 'legend-check';
+        check.textContent = '✓';
+        dot.appendChild(check);
+
+        const label = document.createElement('span');
+        label.className = 'legend-label';
+        label.textContent = retailerDisplayName(retailer);
+
+        item.appendChild(dot);
+        item.appendChild(label);
+        legendContainer.appendChild(item);
+
+        item.addEventListener('click', () => {
+            if (deactivatedDatasets[product.id].has(retailer)) {
+                deactivatedDatasets[product.id].delete(retailer);
+                item.classList.remove('inactive');
+                dot.style.backgroundColor = RETAILER_COLORS[retailer];
+            } else {
+                deactivatedDatasets[product.id].add(retailer);
+                item.classList.add('inactive');
+                dot.style.backgroundColor = '';
+            }
+            const activeBtn = chartWrapper.querySelector('.range-btn.active');
+            const range = activeBtn ? activeBtn.dataset.range : 'all';
+            renderChart(canvas, product, range);
+        });
+    });
+
+    // Determine default range (per-product override or 'all')
+    const defaultRange = DEFAULT_RANGE_OVERRIDES[product.id] || 'all';
+    if (defaultRange !== 'all') {
+        rangeButtons.forEach(b => b.classList.remove('active'));
+        const defaultBtn = chartWrapper.querySelector(`.range-btn[data-range="${defaultRange}"]`);
+        if (defaultBtn) defaultBtn.classList.add('active');
+    }
+
     // Then render chart after element is fully in DOM
-    // Use requestAnimationFrame to ensure DOM is ready
     requestAnimationFrame(() => {
-        renderChart(canvas, product, 'all');
+        renderChart(canvas, product, defaultRange);
     });
 }
 
@@ -262,8 +338,12 @@ function renderChart(canvas, product, range) {
     const chartDataMap = {};
     product.chartData.forEach(rd => { chartDataMap[rd.retailer] = rd; });
 
+    const productDeactivated = deactivatedDatasets[product.id] || new Set();
+
     const datasets = ALL_RETAILERS.map(retailer => {
         const retailerData = chartDataMap[retailer];
+        const isDeactivated = productDeactivated.has(retailer);
+        const color = isDeactivated ? DEACTIVATED_COLOR : (RETAILER_COLORS[retailer] || '#666');
         let points = [];
         if (retailerData) {
             points = retailerData.prices
@@ -271,14 +351,15 @@ function renderChart(canvas, product, range) {
                 .filter(p => !rangeMin || p.x >= rangeMin);
         }
         return {
-            label: capitalizeFirst(retailer),
+            label: retailerDisplayName(retailer),
             data: points,
-            borderColor: RETAILER_COLORS[retailer] || '#666',
-            backgroundColor: RETAILER_COLORS[retailer] || '#666',
+            borderColor: color,
+            backgroundColor: color,
             tension: 0.1,
             pointRadius: 4,
             pointHoverRadius: 6,
-            borderDash: retailerData ? [] : [5, 5]
+            borderDash: retailerData ? [] : [5, 5],
+            order: isDeactivated ? 0 : 1
         };
     });
 
@@ -296,10 +377,14 @@ function renderChart(canvas, product, range) {
         }
     };
 
-    // Set fixed min/max so all charts share the same width for the selected range
+    // Set fixed min/max so all charts share the same width
     if (rangeMin) {
         xScaleConfig.min = rangeMin.toISOString();
         xScaleConfig.max = rangeMax.toISOString();
+    } else if (globalDateRange.min && globalDateRange.max) {
+        // "All" view: use global date range so all charts have the same x-axis span
+        xScaleConfig.min = globalDateRange.min.toISOString();
+        xScaleConfig.max = globalDateRange.max.toISOString();
     }
 
     // Create chart
@@ -319,13 +404,7 @@ function renderChart(canvas, product, range) {
             },
             plugins: {
                 legend: {
-                    position: 'bottom',
-                    labels: {
-                        usePointStyle: true,
-                        padding: 25,
-                        boxWidth: 5,
-                        font: { size: 11 }
-                    }
+                    display: false
                 },
                 tooltip: {
                     mode: 'index',
@@ -342,10 +421,10 @@ function renderChart(canvas, product, range) {
                 y: {
                     beginAtZero: false,
                     title: {
-                        display: true,
-                        text: 'Price ($)'
+                        display: false
                     },
                     ticks: {
+                        font: { size: 10 },
                         callback: function(value) {
                             return '$' + value.toFixed(2);
                         }
@@ -563,6 +642,11 @@ function priceHtml(value) {
 
 function capitalizeFirst(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function retailerDisplayName(retailer) {
+    const special = { 'cvs': 'CVS' };
+    return special[retailer] || capitalizeFirst(retailer);
 }
 
 function formatDate(dateString) {

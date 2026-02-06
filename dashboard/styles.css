@@ -8,8 +8,8 @@
 :root {
     --color-amazon: #FF9900;
     --color-target: #CC0000;
-    --color-walgreens: #E31837;
-    --color-cvs: #c4242b;
+    --color-walgreens: #7B1FA2;
+    --color-cvs: #E91E63;
     --color-walmart: #0071CE;
     --bg-light: #f5f5f5;
     --bg-white: #ffffff;
@@ -337,6 +337,8 @@ header h1 {
     padding: 1rem;
     background-color: var(--bg-light);
     border-radius: 4px;
+    min-width: 0;
+    overflow: hidden;
 }
 
 /* Time Range Controls */
@@ -344,7 +346,7 @@ header h1 {
     display: flex;
     gap: 0;
     margin-bottom: 0.5rem;
-    align-self: flex-end;
+    align-self: center;
     border: 1px solid var(--border-color);
     border-radius: 4px;
     overflow: hidden;
@@ -378,6 +380,59 @@ header h1 {
 .price-chart {
     max-width: 100%;
     max-height: 300px;
+}
+
+/* Chart Legend */
+.chart-legend {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 0.75rem 0 0.25rem;
+}
+
+.legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+.legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background-color 0.2s;
+}
+
+.legend-check {
+    color: white;
+    font-size: 6px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.legend-label {
+    font-size: 11px;
+    color: var(--text-primary);
+    transition: color 0.2s;
+}
+
+.legend-item.inactive .legend-dot {
+    background-color: #d0d0d0 !important;
+}
+
+.legend-item.inactive .legend-check {
+    display: none;
+}
+
+.legend-item.inactive .legend-label {
+    color: #d0d0d0;
 }
 
 /* Retailer Stats (Right Section) */
