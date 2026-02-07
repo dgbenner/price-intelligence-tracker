@@ -249,16 +249,24 @@ function renderProduct(product, container) {
     // Build HTML legend with toggle controls
     const legendContainer = chartWrapper.querySelector('.chart-legend');
     const ALL_RETAILERS_LEGEND = ['amazon', 'cvs', 'target', 'walgreens', 'walmart'];
+    const retailersWithData = new Set(product.chartData.map(rd => rd.retailer));
     deactivatedDatasets[product.id] = new Set();
 
     ALL_RETAILERS_LEGEND.forEach(retailer => {
+        const hasData = retailersWithData.has(retailer);
         const item = document.createElement('span');
         item.className = 'legend-item';
         item.dataset.retailer = retailer;
 
+        // Auto-deactivate retailers with no data
+        if (!hasData) {
+            deactivatedDatasets[product.id].add(retailer);
+            item.classList.add('inactive');
+        }
+
         const dot = document.createElement('span');
         dot.className = 'legend-dot';
-        dot.style.backgroundColor = RETAILER_COLORS[retailer];
+        dot.style.backgroundColor = hasData ? RETAILER_COLORS[retailer] : '';
 
         const check = document.createElement('span');
         check.className = 'legend-check';
