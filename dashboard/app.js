@@ -672,6 +672,21 @@ function formatDate(dateString) {
 
 // Product catalog for "Add Product" modal
 const PRODUCT_CATALOG = {
+    'Eucerin': [
+        { id: 'eucerin-eczema-relief-5oz', name: 'Eczema Relief Cream', size: '5 oz' },
+        { id: 'eucerin-eczema-relief-8oz', name: 'Eczema Relief Cream', size: '8 oz' },
+        { id: 'eucerin-eczema-relief-14oz', name: 'Eczema Relief Cream', size: '14 oz' },
+        { id: 'eucerin-eczema-relief-2x8oz', name: 'Eczema Relief Cream', size: '2 x 8 oz' },
+        { id: 'eucerin-eczema-relief-body-wash-13.5oz', name: 'Eczema Relief Body Wash', size: '13.5 oz' },
+        { id: 'eucerin-eczema-relief-flare-up-2oz', name: 'Eczema Relief Flare-Up Treatment', size: '2 oz' },
+        { id: 'eucerin-advanced-repair-16oz', name: 'Advanced Repair Lotion', size: '16 oz' },
+        { id: 'eucerin-advanced-repair-2x16oz', name: 'Advanced Repair Lotion', size: '2 x 16 oz' },
+        { id: 'eucerin-daily-hydration-16.9oz', name: 'Daily Hydration Lotion', size: '16.9 oz' },
+        { id: 'eucerin-original-healing-16oz', name: 'Original Healing Cream', size: '16 oz' },
+        { id: 'eucerin-original-healing-2oz', name: 'Original Healing Cream', size: '2 oz' },
+        { id: 'eucerin-roughness-relief-16.9oz', name: 'Roughness Relief Lotion', size: '16.9 oz' },
+        { id: 'eucerin-intensive-repair-16.9oz', name: 'Intensive Repair Lotion', size: '16.9 oz' },
+    ],
     'Pataday': [
         { id: 'pataday-once-daily-2.5ml', name: 'Once Daily Relief', size: '2.5 mL' },
         { id: 'pataday-once-daily-2x2.5ml', name: 'Once Daily Relief', size: '2 x 2.5 mL' },
@@ -689,6 +704,9 @@ const PRODUCT_CATALOG = {
     ]
 };
 
+// Track selected products in Add Product modal
+let addProductSelections = new Set();
+
 // Add Product modal logic
 function openAddProductModal(brandName) {
     const modal = document.getElementById('add-product-modal');
@@ -697,6 +715,7 @@ function openAddProductModal(brandName) {
 
     title.textContent = `Add Product — ${brandName}`;
     list.innerHTML = '';
+    addProductSelections.clear();
 
     const products = PRODUCT_CATALOG[brandName] || [];
     if (products.length === 0) {
@@ -705,13 +724,21 @@ function openAddProductModal(brandName) {
         products.forEach(product => {
             const item = document.createElement('div');
             item.className = 'add-product-item';
+            item.dataset.productId = product.id;
             item.innerHTML = `
-                <span class="add-product-item-name">${product.name}</span>
-                <span class="add-product-item-size">${product.size}</span>
+                <span class="add-product-toggle">✓</span>
+                <div class="add-product-item-info">
+                    <span class="add-product-item-name">${product.name}</span>
+                    <span class="add-product-item-size">${product.size}</span>
+                </div>
             `;
             item.addEventListener('click', () => {
-                // Placeholder — will wire to backend later
-                alert(`Selected: ${product.name} (${product.size})\nProduct ID: ${product.id}`);
+                item.classList.toggle('active');
+                if (item.classList.contains('active')) {
+                    addProductSelections.add(product.id);
+                } else {
+                    addProductSelections.delete(product.id);
+                }
             });
             list.appendChild(item);
         });
@@ -720,8 +747,24 @@ function openAddProductModal(brandName) {
     modal.classList.add('show');
 
     const closeBtn = modal.querySelector('.close');
-    closeBtn.onclick = () => modal.classList.remove('show');
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) modal.classList.remove('show');
-    });
+    const cancelBtn = modal.querySelector('.add-product-cancel');
+    const saveBtn = modal.querySelector('.add-product-save');
+
+    const closeModal = () => modal.classList.remove('show');
+
+    closeBtn.onclick = closeModal;
+    cancelBtn.onclick = closeModal;
+    modal.onclick = (e) => { if (e.target === modal) closeModal(); };
+
+    saveBtn.onclick = () => {
+        if (addProductSelections.size === 0) {
+            closeModal();
+            return;
+        }
+        // Placeholder — will wire to backend later
+        const selected = Array.from(addProductSelections);
+        console.log('Products to add:', selected);
+        alert(`Selected ${selected.length} product(s):\n${selected.join('\n')}`);
+        closeModal();
+    };
 }

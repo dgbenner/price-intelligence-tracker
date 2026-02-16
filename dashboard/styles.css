@@ -921,33 +921,84 @@ header h1 {
 /* Add Product Modal */
 .add-product-modal-content {
     max-width: 480px;
+    display: flex;
+    flex-direction: column;
+    max-height: 80vh;
 }
 
 .add-product-modal-content h2 {
     font-size: 1.3rem;
     margin-bottom: 1rem;
+    flex-shrink: 0;
 }
 
 .add-product-list {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    overflow-y: auto;
+    flex: 1;
+    padding-right: 0.25rem;
+}
+
+.add-product-list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.add-product-list::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 2px;
 }
 
 .add-product-item {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    gap: 0.75rem;
     padding: 0.6rem 0.75rem;
     border: 1px solid var(--border-color);
     border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s;
+    flex-shrink: 0;
 }
 
 .add-product-item:hover {
     background-color: #f0f7ff;
     border-color: #90caf9;
+}
+
+.add-product-item.active {
+    background-color: #e8f5e9;
+    border-color: #4caf50;
+}
+
+.add-product-toggle {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: transparent;
+}
+
+.add-product-item.active .add-product-toggle {
+    background-color: #4caf50;
+    border-color: #4caf50;
+    color: white;
+}
+
+.add-product-item-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
 }
 
 .add-product-item-name {
@@ -959,6 +1010,50 @@ header h1 {
     font-size: 0.8rem;
     color: var(--text-secondary);
     font-weight: 600;
+    flex-shrink: 0;
+}
+
+.add-product-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding-top: 1rem;
+    margin-top: 0.5rem;
+    border-top: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.add-product-cancel {
+    background: none;
+    border: 1px solid #ccc;
+    color: var(--text-secondary);
+    padding: 0.4rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.add-product-cancel:hover {
+    border-color: #999;
+    color: var(--text-primary);
+}
+
+.add-product-save {
+    background-color: #4caf50;
+    border: none;
+    color: white;
+    padding: 0.4rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.add-product-save:hover {
+    background-color: #45a049;
 }
 
 /* Loading State */
