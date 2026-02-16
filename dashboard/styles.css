@@ -11,7 +11,7 @@
     --color-walgreens: #7B1FA2;
     --color-cvs: #E91E63;
     --color-walmart: #0071CE;
-    --bg-light: #f5f5f5;
+    --bg-light: #2a2d32;
     --bg-white: #ffffff;
     --text-primary: #333333;
     --text-secondary: #666666;
@@ -29,20 +29,22 @@ body {
 
 /* Header */
 header {
-    background-color: var(--bg-white);
+    background-color: var(--bg-light);
     padding: 2rem 1rem;
     text-align: center;
     box-shadow: var(--shadow);
     margin-bottom: 2rem;
+    color: #e0e0e0;
 }
 
 header h1 {
     font-size: 2rem;
     margin-bottom: 0.5rem;
+    color: #ffffff;
 }
 
 .subtitle {
-    color: var(--text-secondary);
+    color: #a0a4ab;
     font-size: 1.1rem;
     margin-bottom: 1rem;
 }
@@ -50,11 +52,11 @@ header h1 {
 .affiliate-disclosure {
     margin-top: 1rem;
     padding-top: 1rem;
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid #3a3d42;
 }
 
 .affiliate-disclosure small {
-    color: var(--text-secondary);
+    color: #808590;
 }
 
 /* Main Dashboard */
@@ -78,7 +80,7 @@ header h1 {
     justify-content: space-between;
     align-items: center;
     padding: 1.5rem;
-    background-color: var(--bg-light);
+    background-color: #f0f0f0;
     cursor: pointer;
     transition: background-color 0.3s;
 }
@@ -87,9 +89,34 @@ header h1 {
     background-color: #e8e8e8;
 }
 
+.brand-header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
 .brand-name {
     font-size: 1.5rem;
     font-weight: 600;
+}
+
+.add-product-btn {
+    background: none;
+    border: 1px solid #bbb;
+    color: #888;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.add-product-btn:hover {
+    border-color: #888;
+    color: #555;
+    background-color: #e0e0e0;
 }
 
 .collapse-toggle {
@@ -136,7 +163,7 @@ header h1 {
 .product-image-wrapper {
     width: 100%;
     aspect-ratio: 1 / 1;
-    background-color: var(--bg-light);
+    background-color: #f5f5f5;
     border-radius: 8px;
     display: flex;
     align-items: center;
@@ -335,7 +362,7 @@ header h1 {
     flex-direction: column;
     align-items: stretch;
     padding: 1rem;
-    background-color: var(--bg-light);
+    background-color: #f5f5f5;
     border-radius: 4px;
     min-width: 0;
     overflow: hidden;
@@ -447,7 +474,7 @@ header h1 {
 }
 
 .stats-table th {
-    background-color: var(--bg-light);
+    background-color: #f5f5f5;
     padding: 0.75rem 0.5rem;
     text-align: left;
     font-weight: 600;
@@ -502,9 +529,9 @@ header h1 {
 }
 
 .tag-cell {
-    text-align: center;
     padding-top: 0 !important;
     padding-bottom: 0.5rem !important;
+    text-align: right;
 }
 
 .retailer-tag {
@@ -515,15 +542,29 @@ header h1 {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.02em;
-    margin: 0 0.4rem;
+    margin: 0;
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    white-space: nowrap;
 }
 
 .todays-best-tag {
     color: #2e7d32;
+    background-color: #e8f5e9;
 }
 
 .consistent-tag {
     color: #1565c0;
+    background-color: #e3f2fd;
+}
+
+/* When both tags are present, form a combined pill */
+.retailer-tag:first-child:not(:only-child) {
+    border-radius: 12px 0 0 12px;
+}
+
+.retailer-tag:last-child:not(:only-child) {
+    border-radius: 0 12px 12px 0;
 }
 
 .tag-check {
@@ -654,7 +695,6 @@ header h1 {
 
 .insight-card {
     flex: 0 0 220px;
-    height: 180px;
     scroll-snap-align: start;
     background-color: white;
     border-radius: 6px;
@@ -685,6 +725,8 @@ header h1 {
     align-items: center;
     gap: 0.25rem;
     flex-shrink: 0;
+    flex-wrap: wrap-reverse;
+    justify-content: center;
 }
 
 .confidence-bar {
@@ -707,24 +749,31 @@ header h1 {
     color: var(--text-secondary);
 }
 
+.confidence-label {
+    font-size: 8px;
+    color: var(--text-secondary);
+    width: 100%;
+    text-align: center;
+    line-height: 1;
+    margin-top: -1px;
+}
+
 .insight-text {
     font-size: 0.6rem;
     line-height: 1.4;
     color: var(--text-primary);
     margin: 0;
-    flex: 1;
     overflow: hidden;
 }
 
 .insight-date {
     font-size: 0.5rem;
     color: var(--text-secondary);
-    margin-top: auto;
 }
 
 /* Container Footer */
 .container-footer {
-    background-color: var(--bg-light);
+    background-color: #f0f0f0;
     padding: 1.5rem;
     display: flex;
     align-items: center;
@@ -849,7 +898,7 @@ header h1 {
 
 .dca-explanation {
     padding: 1.5rem;
-    background-color: var(--bg-light);
+    background-color: #f5f5f5;
     border-radius: 4px;
     margin-top: 1.5rem;
 }
@@ -867,6 +916,49 @@ header h1 {
 
 .dca-explanation a:hover {
     text-decoration: underline;
+}
+
+/* Add Product Modal */
+.add-product-modal-content {
+    max-width: 480px;
+}
+
+.add-product-modal-content h2 {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+}
+
+.add-product-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.add-product-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.add-product-item:hover {
+    background-color: #f0f7ff;
+    border-color: #90caf9;
+}
+
+.add-product-item-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.add-product-item-size {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-weight: 600;
 }
 
 /* Loading State */

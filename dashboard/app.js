@@ -95,6 +95,13 @@ function renderBrandContainer(brand, container) {
 
     brandName.textContent = brand.name;
 
+    // Add Product button
+    const addProductBtn = brandElement.querySelector('.add-product-btn');
+    addProductBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openAddProductModal(brand.name);
+    });
+
     // Add collapse functionality
     const brandHeader = brandElement.querySelector('.brand-header');
     brandHeader.addEventListener('click', () => {
@@ -633,6 +640,7 @@ function renderInsights(product, container) {
                         <div class="confidence-fill" style="width: ${insight.confidence}%; background-color: ${confColor}"></div>
                     </div>
                     <span class="confidence-value">${insight.confidence}%</span>
+                    <span class="confidence-label">AI certainty</span>
                 </div>
             </div>
             <p class="insight-text">${insight.text}</p>
@@ -660,4 +668,60 @@ function retailerDisplayName(retailer) {
 function formatDate(dateString) {
     const date = new Date(dateString);
     return `${date.getMonth() + 1}-${date.getDate()}-${date.getFullYear()}`;
+}
+
+// Product catalog for "Add Product" modal
+const PRODUCT_CATALOG = {
+    'Pataday': [
+        { id: 'pataday-once-daily-2.5ml', name: 'Once Daily Relief', size: '2.5 mL' },
+        { id: 'pataday-once-daily-2x2.5ml', name: 'Once Daily Relief', size: '2 x 2.5 mL' },
+        { id: 'pataday-once-daily-3x2.5ml', name: 'Once Daily Relief', size: '3 x 2.5 mL' },
+        { id: 'pataday-once-daily-8ml', name: 'Once Daily Relief', size: '8 mL' },
+        { id: 'pataday-extra-strength-2.5ml', name: 'Extra Strength', size: '2.5 mL' },
+        { id: 'pataday-extra-strength-2x2.5ml', name: 'Extra Strength', size: '2 x 2.5 mL' },
+        { id: 'pataday-extra-strength-3x2.5ml', name: 'Extra Strength', size: '3 x 2.5 mL' },
+        { id: 'pataday-extra-strength-8ml', name: 'Extra Strength', size: '8 mL' },
+        { id: 'pataday-twice-daily-5ml', name: 'Twice Daily Relief', size: '5 mL' },
+        { id: 'pataday-twice-daily-2x5ml', name: 'Twice Daily Relief', size: '2 x 5 mL' },
+        { id: 'olopatadine-0.1-5ml', name: 'Olopatadine 0.1%', size: '5 mL' },
+        { id: 'olopatadine-0.2-2.5ml', name: 'Olopatadine 0.2%', size: '2.5 mL' },
+        { id: 'olopatadine-0.7-2.5ml', name: 'Olopatadine 0.7%', size: '2.5 mL' },
+    ]
+};
+
+// Add Product modal logic
+function openAddProductModal(brandName) {
+    const modal = document.getElementById('add-product-modal');
+    const title = document.getElementById('add-product-brand-name');
+    const list = modal.querySelector('.add-product-list');
+
+    title.textContent = `Add Product — ${brandName}`;
+    list.innerHTML = '';
+
+    const products = PRODUCT_CATALOG[brandName] || [];
+    if (products.length === 0) {
+        list.innerHTML = '<p style="color: #999; font-size: 0.9rem;">No products available yet.</p>';
+    } else {
+        products.forEach(product => {
+            const item = document.createElement('div');
+            item.className = 'add-product-item';
+            item.innerHTML = `
+                <span class="add-product-item-name">${product.name}</span>
+                <span class="add-product-item-size">${product.size}</span>
+            `;
+            item.addEventListener('click', () => {
+                // Placeholder — will wire to backend later
+                alert(`Selected: ${product.name} (${product.size})\nProduct ID: ${product.id}`);
+            });
+            list.appendChild(item);
+        });
+    }
+
+    modal.classList.add('show');
+
+    const closeBtn = modal.querySelector('.close');
+    closeBtn.onclick = () => modal.classList.remove('show');
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.classList.remove('show');
+    });
 }

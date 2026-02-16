@@ -35,11 +35,25 @@
         </div>
     </div>
 
+    <!-- Add Product Modal -->
+    <div id="add-product-modal" class="modal">
+        <div class="modal-content add-product-modal-content">
+            <span class="close">&times;</span>
+            <h2 id="add-product-brand-name"></h2>
+            <div class="add-product-list">
+                <!-- Product options will be populated dynamically -->
+            </div>
+        </div>
+    </div>
+
     <!-- Template for brand container -->
     <template id="brand-container-template">
         <section class="brand-container">
             <div class="brand-header">
-                <h2 class="brand-name"></h2>
+                <div class="brand-header-left">
+                    <h2 class="brand-name"></h2>
+                    <button class="add-product-btn" aria-label="Add a product">+ Add Product</button>
+                </div>
                 <button class="collapse-toggle" aria-label="Toggle products">▼</button>
             </div>
             <div class="products-wrapper">
