@@ -532,6 +532,7 @@ function renderProduct(product, container) {
     // Add tooltip toggles for both callout cards
     productElement.querySelectorAll('.callout-card').forEach(card => {
         const infoBtn = card.querySelector('.callout-info');
+        if (!infoBtn) return;
         const tooltip = card.querySelector('.callout-tooltip');
         infoBtn.addEventListener('click', (e) => {
             e.stopPropagation();
