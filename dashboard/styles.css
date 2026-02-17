@@ -672,11 +672,18 @@ header {
 
 /* Retailer Stats (Right Section) */
 .retailer-stats {
+    min-width: 0;
     overflow-x: auto;
+}
+
+.stats-table th,
+.stats-table td {
+    white-space: nowrap;
 }
 
 .stats-table {
     width: 100%;
+    table-layout: fixed;
     border-collapse: collapse;
     font-size: 0.9rem;
 }
