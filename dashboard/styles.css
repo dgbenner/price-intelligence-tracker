@@ -319,7 +319,7 @@ header {
 /* Product Row */
 .product-row {
     display: grid;
-    grid-template-columns: 300px 1fr 400px;
+    grid-template-columns: 300px 1fr minmax(0, 400px);
     gap: 2rem;
     padding: 2rem;
     border-bottom: 1px solid var(--border-color);
