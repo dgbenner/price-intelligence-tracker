@@ -36,6 +36,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('how-it-works-modal').classList.add('show');
     });
 
+    // Category card toggle
+    document.querySelectorAll('.category-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.querySelectorAll('.category-card').forEach(c => c.classList.remove('active'));
+            card.classList.add('active');
+        });
+    });
+
     // Close tooltips when clicking outside
     document.addEventListener('click', () => {
         document.querySelectorAll('.callout-tooltip:not(.hidden)').forEach(t => {
