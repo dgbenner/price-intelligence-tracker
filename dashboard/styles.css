@@ -430,6 +430,38 @@ header {
     color: #1565c0;
 }
 
+/* Lowest Price Ever callout - neutral grayscale */
+.callout-lowest-ever {
+    background-color: #f5f5f5;
+    border-left-color: #999;
+    padding: 0.5rem 0.75rem;
+}
+
+.callout-lowest-ever .callout-header {
+    margin-bottom: 0.3rem;
+}
+
+.callout-lowest-ever .callout-label {
+    color: #777;
+    font-size: 0.7rem;
+}
+
+.callout-lowest-ever .callout-price {
+    color: #666;
+    font-size: 1rem;
+}
+
+.callout-lowest-ever .callout-subtitle {
+    color: #999;
+}
+
+.callout-marker {
+    font-size: 1.1rem;
+    color: #999;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
 .callout-info {
     background: none;
     border: none;
@@ -732,6 +764,11 @@ header {
 .consistent-tag {
     color: #1565c0;
     background-color: #e3f2fd;
+}
+
+.lowest-ever-tag {
+    color: #777;
+    background-color: #f0f0f0;
 }
 
 /* When both tags are present, form a combined pill */

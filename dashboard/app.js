@@ -238,10 +238,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (categoriesContainer && leftArrow && rightArrow) {
         const scrollAmount = 150;
 
+        // Start scrolled all the way to the left
+        categoriesContainer.scrollLeft = 0;
+
         const updateArrowVisibility = () => {
             const { scrollLeft, scrollWidth, clientWidth } = categoriesContainer;
-            leftArrow.classList.toggle('hidden', scrollLeft <= 0);
-            rightArrow.classList.toggle('hidden', scrollLeft + clientWidth >= scrollWidth - 1);
+            const atStart = scrollLeft <= 0;
+            const atEnd = scrollLeft + clientWidth >= scrollWidth - 1;
+            leftArrow.classList.toggle('hidden', atStart);
+            rightArrow.classList.toggle('hidden', atEnd);
+            // Only fade edges that have more content to scroll to
+            const leftFade = atStart ? 'black' : 'transparent, black 24px';
+            const rightFade = atEnd ? 'black' : 'black calc(100% - 24px), transparent';
+            const mask = `linear-gradient(to right, ${leftFade}, ${rightFade})`;
+            categoriesContainer.style.maskImage = mask;
+            categoriesContainer.style.webkitMaskImage = mask;
         };
 
         leftArrow.addEventListener('click', () => {
@@ -532,12 +543,27 @@ function renderProduct(product, container) {
         });
     });
 
+    // Determine "Lowest Price Ever" across all retailers
+    const lowestEver = getLowestPriceEver(product);
+
+    // Populate "Lowest Price Ever" callout
+    const lowestEverCard = productElement.querySelector('.callout-lowest-ever');
+    const lowestEverLogo = lowestEverCard.querySelector('.callout-retailer-logo');
+    const lowestEverLogoExt = RETAILER_LOGO_EXT[lowestEver.retailer] || 'png';
+    lowestEverLogo.src = `images/retailers/${lowestEver.retailer}.${lowestEverLogoExt}`;
+    lowestEverLogo.alt = capitalizeFirst(lowestEver.retailer);
+    const lowestEverPrice = lowestEverCard.querySelector('.callout-price');
+    lowestEverPrice.innerHTML = priceHtml(lowestEver.price);
+    const lowestEverSubtitle = lowestEverCard.querySelector('.callout-subtitle');
+    lowestEverSubtitle.textContent = `on ${formatDateReadable(lowestEver.date)}`;
+
     // Render retailer stats (retailers are already sorted by avg, first is best)
     const statsBody = productElement.querySelector('.stats-table tbody');
     product.retailers.forEach((retailer, index) => {
         const isBestValue = index === 0;
         const isTodaysBest = retailer.name.toLowerCase() === todaysBestName;
-        renderRetailerRow(retailer, statsBody, isBestValue, isTodaysBest);
+        const isLowestEver = retailer.name.toLowerCase() === lowestEver.retailer;
+        renderRetailerRow(retailer, statsBody, isBestValue, isTodaysBest, isLowestEver);
     });
 
     // Render trend insights
@@ -716,6 +742,50 @@ function renderChart(canvas, product, range) {
         xScaleConfig.max = globalDateRange.max.toISOString();
     }
 
+    // Add "Lowest Price Ever" marker dataset (down triangle, stroke only)
+    const lowestEver = getLowestPriceEver(product);
+    if (lowestEver.retailer && lowestEver.date) {
+        const lowestDate = new Date(lowestEver.date);
+        // Only show marker if it falls within the current range
+        if (!rangeMin || lowestDate >= rangeMin) {
+            datasets.push({
+                label: 'Lowest Ever',
+                data: [{ x: lowestDate, y: lowestEver.price }],
+                borderColor: '#999',
+                backgroundColor: '#ffffff',
+                pointStyle: 'triangle',
+                pointRotation: 180,
+                pointRadius: 8,
+                pointHoverRadius: 10,
+                pointBorderWidth: 2,
+                pointBorderColor: '#999',
+                showLine: false,
+                order: 2
+            });
+        }
+    }
+
+    // Plugin to draw horizontal dashed line at lowest-ever price
+    const lowestEverLinePlugin = {
+        id: 'lowestEverLine',
+        afterDraw(chart) {
+            if (!lowestEver.price || lowestEver.price === Infinity) return;
+            const yScale = chart.scales.y;
+            const yPixel = yScale.getPixelForValue(lowestEver.price);
+            if (yPixel < yScale.top || yPixel > yScale.bottom) return;
+            const ctx = chart.ctx;
+            ctx.save();
+            ctx.beginPath();
+            ctx.setLineDash([4, 4]);
+            ctx.strokeStyle = '#bbb';
+            ctx.lineWidth = 1;
+            ctx.moveTo(chart.chartArea.left, yPixel);
+            ctx.lineTo(chart.chartArea.right, yPixel);
+            ctx.stroke();
+            ctx.restore();
+        }
+    };
+
     // Create chart
     let chart;
     try {
@@ -724,6 +794,7 @@ function renderChart(canvas, product, range) {
         data: {
             datasets: datasets
         },
+        plugins: [lowestEverLinePlugin],
         options: {
             responsive: true,
             maintainAspectRatio: true,
@@ -738,6 +809,9 @@ function renderChart(canvas, product, range) {
                 tooltip: {
                     mode: 'index',
                     intersect: false,
+                    filter: function(tooltipItem) {
+                        return tooltipItem.dataset.label !== 'Lowest Ever';
+                    },
                     callbacks: {
                         label: function(context) {
                             return `${context.dataset.label}: $${context.parsed.y.toFixed(2)}`;
@@ -786,7 +860,7 @@ const RETAILER_LOGO_EXT = {
 };
 
 // Render retailer statistics row
-function renderRetailerRow(retailer, tbody, isBestValue, isTodaysBest) {
+function renderRetailerRow(retailer, tbody, isBestValue, isTodaysBest, isLowestEver) {
     const row = document.createElement('tr');
     const name = retailer.name.toLowerCase();
     const ext = RETAILER_LOGO_EXT[name] || 'png';
@@ -815,12 +889,13 @@ function renderRetailerRow(retailer, tbody, isBestValue, isTodaysBest) {
     tbody.appendChild(row);
 
     // Add tag row underneath if this retailer has any designations
-    if (isTodaysBest || isBestValue) {
+    if (isTodaysBest || isBestValue || isLowestEver) {
         const tagRow = document.createElement('tr');
         tagRow.className = 'tag-row';
         let tags = '';
         if (isTodaysBest) tags += '<span class="retailer-tag todays-best-tag"><span class="tag-check">✓</span> Today\'s Best Price</span>';
         if (isBestValue) tags += '<span class="retailer-tag consistent-tag"><span class="tag-check tag-check-blue">✓</span> Consistent Best Value</span>';
+        if (isLowestEver) tags += '<span class="retailer-tag lowest-ever-tag"><span style="font-size:0.5rem;margin-right:-1px">▾</span> Lowest Ever</span>';
         tagRow.innerHTML = `<td colspan="5" class="tag-cell">${tags}</td>`;
         tbody.appendChild(tagRow);
     }
@@ -894,6 +969,25 @@ function getTodaysBestPrice(product) {
     });
 
     return { retailer: bestRetailer, price: bestPrice };
+}
+
+// Get lowest price ever recorded across all retailers
+function getLowestPriceEver(product) {
+    let lowestRetailer = null;
+    let lowestPrice = Infinity;
+    let lowestDate = null;
+
+    product.chartData.forEach(rd => {
+        rd.prices.forEach(p => {
+            if (p.price < lowestPrice) {
+                lowestPrice = p.price;
+                lowestRetailer = rd.retailer;
+                lowestDate = p.date;
+            }
+        });
+    });
+
+    return { retailer: lowestRetailer, price: lowestPrice, date: lowestDate };
 }
 
 // Placeholder trend insights per retailer
@@ -986,6 +1080,12 @@ function retailerDisplayName(retailer) {
 function formatDate(dateString) {
     const date = new Date(dateString);
     return `${date.getMonth() + 1}-${date.getDate()}-${date.getFullYear()}`;
+}
+
+function formatDateReadable(dateString) {
+    const date = new Date(dateString);
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
 }
 
 // Product catalog for "Add Product" modal
