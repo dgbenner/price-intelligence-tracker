@@ -30,33 +30,112 @@ body {
 /* Header */
 header {
     background-color: var(--bg-light);
-    padding: 2rem 1rem;
-    text-align: center;
+    padding: 0;
     box-shadow: var(--shadow);
     margin-bottom: 2rem;
     color: #e0e0e0;
 }
 
-header h1 {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
+.header-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.header-left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+    flex-shrink: 0;
+    padding: 0.5rem 0;
+}
+
+.header-logo-container {
+    background-color: #ffffff;
+    border-radius: 6px;
+    padding: 6px 10px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.header-logo {
+    width: 130px;
+    height: auto;
+    display: block;
+}
+
+.header-tagline {
+    font-style: italic;
+    color: #a0a4ab;
+    font-size: 0.8rem;
+    padding-left: 2px;
+    letter-spacing: 0.02em;
+}
+
+.header-center {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding-left: 1rem;
+}
+
+.header-info-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #a0a4ab;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: color 0.2s;
+}
+
+.header-info-link:hover {
     color: #ffffff;
 }
 
-.subtitle {
-    color: #a0a4ab;
+.header-info-icon {
     font-size: 1.1rem;
-    margin-bottom: 1rem;
+    line-height: 1;
 }
 
-.affiliate-disclosure {
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid #3a3d42;
+.header-info-text {
+    font-style: italic;
+    text-decoration: underline;
+    text-underline-offset: 2px;
 }
 
-.affiliate-disclosure small {
-    color: #808590;
+.header-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex-shrink: 0;
+}
+
+.header-nav-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: #a0a4ab;
+    text-decoration: none;
+    font-size: 0.8rem;
+    padding: 0.4rem 0.7rem;
+    border-radius: 4px;
+    transition: color 0.2s, background-color 0.2s;
+    white-space: nowrap;
+}
+
+.header-nav-item:hover {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.header-nav-icon {
+    font-size: 1rem;
+    line-height: 1;
 }
 
 /* Main Dashboard */
@@ -1056,6 +1135,29 @@ header h1 {
     background-color: #45a049;
 }
 
+/* How It Works Modal */
+.how-it-works-modal-content {
+    max-width: 560px;
+}
+
+.how-it-works-modal-content h2 {
+    font-size: 1.3rem;
+    margin-bottom: 1.25rem;
+    color: var(--text-primary);
+    padding-right: 2rem;
+}
+
+.how-it-works-body p {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+}
+
+.how-it-works-body p:last-child {
+    margin-bottom: 0;
+}
+
 /* Loading State */
 .loading {
     text-align: center;
@@ -1081,12 +1183,19 @@ header h1 {
 }
 
 @media (max-width: 768px) {
-    header h1 {
-        font-size: 1.5rem;
+    .header-inner {
+        flex-wrap: wrap;
+        gap: 0.75rem;
     }
 
-    .subtitle {
-        font-size: 1rem;
+    .header-center {
+        order: 3;
+        flex-basis: 100%;
+        padding-left: 0;
+    }
+
+    .header-nav {
+        margin-left: auto;
     }
 
     .brand-name {
@@ -1125,12 +1234,20 @@ header h1 {
 }
 
 @media (max-width: 480px) {
-    header {
-        padding: 1rem;
+    .header-inner {
+        padding: 0.5rem 0.75rem;
     }
 
-    header h1 {
-        font-size: 1.3rem;
+    .header-logo {
+        width: 100px;
+    }
+
+    .header-nav-item span:not(.header-nav-icon) {
+        display: none;
+    }
+
+    .header-nav-item {
+        padding: 0.4rem;
     }
 
     .brand-header {

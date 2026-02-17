@@ -30,6 +30,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     await loadDashboard();
     setupModalListeners();
 
+    // How It Works modal trigger
+    document.getElementById('how-it-works-link').addEventListener('click', (e) => {
+        e.preventDefault();
+        document.getElementById('how-it-works-modal').classList.add('show');
+    });
+
     // Close tooltips when clicking outside
     document.addEventListener('click', () => {
         document.querySelectorAll('.callout-tooltip:not(.hidden)').forEach(t => {
@@ -536,25 +542,29 @@ function showSavingsModal(product) {
     modal.classList.add('show');
 }
 
-// Setup modal event listeners
+// Setup modal event listeners for all modals
 function setupModalListeners() {
-    const modal = document.getElementById('savings-modal');
-    const closeBtn = modal.querySelector('.close');
-
-    closeBtn.addEventListener('click', () => {
-        modal.classList.remove('show');
-    });
-
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            modal.classList.remove('show');
+    document.querySelectorAll('.modal').forEach(modal => {
+        const closeBtn = modal.querySelector('.close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                modal.classList.remove('show');
+            });
         }
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('show');
+            }
+        });
     });
 
-    // Close on escape key
+    // Close any open modal on escape key
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.classList.contains('show')) {
-            modal.classList.remove('show');
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.modal.show').forEach(modal => {
+                modal.classList.remove('show');
+            });
         }
     });
 }
