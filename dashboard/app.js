@@ -743,23 +743,26 @@ function renderChart(canvas, product, range) {
         xScaleConfig.max = globalDateRange.max.toISOString();
     }
 
-    // Add "Lowest Price Ever" marker dataset (down triangle, stroke only)
+    // Add "Lowest Price Ever" marker dataset (trophy emoji)
     const lowestEver = getLowestPriceEver(product);
     if (lowestEver.retailer && lowestEver.date) {
         const lowestDate = new Date(lowestEver.date);
         // Only show marker if it falls within the current range
         if (!rangeMin || lowestDate >= rangeMin) {
+            // Render trophy emoji to a canvas for Chart.js pointStyle
+            const emojiCanvas = document.createElement('canvas');
+            emojiCanvas.width = 20;
+            emojiCanvas.height = 20;
+            const ectx = emojiCanvas.getContext('2d');
+            ectx.font = '16px serif';
+            ectx.textAlign = 'center';
+            ectx.textBaseline = 'middle';
+            ectx.fillText('🏆', 10, 11);
+
             datasets.push({
                 label: 'Lowest Ever',
                 data: [{ x: lowestDate, y: lowestEver.price }],
-                borderColor: '#999',
-                backgroundColor: '#ffffff',
-                pointStyle: 'triangle',
-                pointRotation: 180,
-                pointRadius: 5.5,
-                pointHoverRadius: 7,
-                pointBorderWidth: 2,
-                pointBorderColor: '#999',
+                pointStyle: emojiCanvas,
                 showLine: false,
                 order: 0
             });
@@ -896,8 +899,7 @@ function renderRetailerRow(retailer, tbody, isBestValue, isTodaysBest, isLowestE
         let tags = '';
         if (isTodaysBest) tags += '<span class="retailer-tag todays-best-tag"><span class="tag-check">✓</span> Today\'s Best Price</span>';
         if (isBestValue) tags += '<span class="retailer-tag consistent-tag"><span class="tag-check tag-check-blue">✓</span> Consistent Best Value</span>';
-        // Lowest Ever badge removed — was causing layout overflow
-        // if (isLowestEver) tags += '<span class="retailer-tag lowest-ever-tag"><span style="font-size:0.8rem;margin-right:-1px">▾</span> Lowest Ever</span>';
+        if (isLowestEver) tags += '<span class="retailer-tag lowest-ever-tag">🏆 Lowest Ever</span>';
         tagRow.innerHTML = `<td colspan="5" style="padding:0;border:none;"><div class="tag-cell">${tags}</div></td>`;
         tbody.appendChild(tagRow);
     }
