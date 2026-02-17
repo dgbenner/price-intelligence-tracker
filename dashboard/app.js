@@ -36,14 +36,39 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('how-it-works-modal').classList.add('show');
     });
 
-    // Category card toggle
+    // Category card toggle (multi-select on/off)
     document.querySelectorAll('.category-card').forEach(card => {
         card.addEventListener('click', (e) => {
             e.preventDefault();
-            document.querySelectorAll('.category-card').forEach(c => c.classList.remove('active'));
-            card.classList.add('active');
+            card.classList.toggle('active');
         });
     });
+
+    // Category scroll arrows
+    const categoriesContainer = document.querySelector('.header-categories');
+    const leftArrow = document.querySelector('.category-arrow-left');
+    const rightArrow = document.querySelector('.category-arrow-right');
+
+    if (categoriesContainer && leftArrow && rightArrow) {
+        const scrollAmount = 150;
+
+        const updateArrowVisibility = () => {
+            const { scrollLeft, scrollWidth, clientWidth } = categoriesContainer;
+            leftArrow.classList.toggle('hidden', scrollLeft <= 0);
+            rightArrow.classList.toggle('hidden', scrollLeft + clientWidth >= scrollWidth - 1);
+        };
+
+        leftArrow.addEventListener('click', () => {
+            categoriesContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+        });
+
+        rightArrow.addEventListener('click', () => {
+            categoriesContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        });
+
+        categoriesContainer.addEventListener('scroll', updateArrowVisibility);
+        updateArrowVisibility();
+    }
 
     // Close tooltips when clicking outside
     document.addEventListener('click', () => {
