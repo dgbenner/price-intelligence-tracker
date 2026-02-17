@@ -761,7 +761,7 @@ function renderChart(canvas, product, range) {
                 pointBorderWidth: 2,
                 pointBorderColor: '#999',
                 showLine: false,
-                order: 2
+                order: 0
             });
         }
     }
