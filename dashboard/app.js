@@ -699,9 +699,9 @@ function renderChart(canvas, product, range) {
     const datasets = ALL_RETAILERS.map(retailer => {
         const retailerData = chartDataMap[retailer];
         const isDeactivated = productDeactivated.has(retailer);
-        const color = isDeactivated ? DEACTIVATED_COLOR : (RETAILER_COLORS[retailer] || '#666');
+        const color = RETAILER_COLORS[retailer] || '#666';
         let points = [];
-        if (retailerData) {
+        if (retailerData && !isDeactivated) {
             points = retailerData.prices
                 .map(p => ({ x: new Date(p.date), y: p.price }))
                 .filter(p => !rangeMin || p.x >= rangeMin);
@@ -715,7 +715,7 @@ function renderChart(canvas, product, range) {
             pointRadius: 4,
             pointHoverRadius: 6,
             borderDash: retailerData ? [] : [5, 5],
-            order: isDeactivated ? 0 : 1
+            order: 1
         };
     });
 
