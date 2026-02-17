@@ -456,7 +456,7 @@ header {
 }
 
 .callout-marker {
-    font-size: 1.1rem;
+    font-size: 1.43rem;
     color: #999;
     line-height: 1;
     flex-shrink: 0;
@@ -740,6 +740,9 @@ header {
     padding-top: 0 !important;
     padding-bottom: 0.5rem !important;
     text-align: right;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
 }
 
 .retailer-tag {
@@ -771,14 +774,6 @@ header {
     background-color: #f0f0f0;
 }
 
-/* When both tags are present, form a combined pill */
-.retailer-tag:first-child:not(:only-child) {
-    border-radius: 12px 0 0 12px;
-}
-
-.retailer-tag:last-child:not(:only-child) {
-    border-radius: 0 12px 12px 0;
-}
 
 .tag-check {
     display: inline-flex;

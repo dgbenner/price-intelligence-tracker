@@ -207,7 +207,7 @@ function buildFakeProduct(brand, name, size, basePrice, category) {
     const id = `${brand}-${name}-${size}`.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '');
     const chartData = generateFakeChartData(basePrice);
     const retailers = deriveRetailerStats(chartData);
-    return { id, name, brand, size, category, retailers, chartData };
+    return { id, name, brand, size, category, retailers, chartData, fake: true };
 }
 
 // Initialize dashboard on page load
@@ -645,8 +645,8 @@ function renderProduct(product, container) {
         });
     });
 
-    // Determine default range (per-product override or 'all')
-    const defaultRange = DEFAULT_RANGE_OVERRIDES[product.id] || 'all';
+    // Determine default range: fake products show 7d, real products use override or 'all'
+    const defaultRange = product.fake ? '7d' : (DEFAULT_RANGE_OVERRIDES[product.id] || 'all');
     if (defaultRange !== 'all') {
         rangeButtons.forEach(b => b.classList.remove('active'));
         const defaultBtn = chartWrapper.querySelector(`.range-btn[data-range="${defaultRange}"]`);
@@ -756,8 +756,8 @@ function renderChart(canvas, product, range) {
                 backgroundColor: '#ffffff',
                 pointStyle: 'triangle',
                 pointRotation: 180,
-                pointRadius: 8,
-                pointHoverRadius: 10,
+                pointRadius: 5.5,
+                pointHoverRadius: 7,
                 pointBorderWidth: 2,
                 pointBorderColor: '#999',
                 showLine: false,
@@ -896,7 +896,7 @@ function renderRetailerRow(retailer, tbody, isBestValue, isTodaysBest, isLowestE
         let tags = '';
         if (isTodaysBest) tags += '<span class="retailer-tag todays-best-tag"><span class="tag-check">✓</span> Today\'s Best Price</span>';
         if (isBestValue) tags += '<span class="retailer-tag consistent-tag"><span class="tag-check tag-check-blue">✓</span> Consistent Best Value</span>';
-        if (isLowestEver) tags += '<span class="retailer-tag lowest-ever-tag"><span style="font-size:0.5rem;margin-right:-1px">▾</span> Lowest Ever</span>';
+        if (isLowestEver) tags += '<span class="retailer-tag lowest-ever-tag"><span style="font-size:0.8rem;margin-right:-1px">▾</span> Lowest Ever</span>';
         tagRow.innerHTML = `<td colspan="5" class="tag-cell">${tags}</td>`;
         tbody.appendChild(tagRow);
     }
