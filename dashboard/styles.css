@@ -741,8 +741,9 @@ header {
     padding-bottom: 0.5rem !important;
     text-align: right;
     display: flex;
-    justify-content: flex-end;
-    gap: 10px;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
 }
 
 .retailer-tag {
