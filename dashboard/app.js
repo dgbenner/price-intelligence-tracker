@@ -25,6 +25,191 @@ const DEFAULT_RANGE_OVERRIDES = {
     'eucerin-advanced-repair-lotion-16.9oz': '60'
 };
 
+// Real product → category mapping
+const REAL_PRODUCT_CATEGORIES = {
+    'eucerin-eczema-5oz': 'skincare',
+    'eucerin-advanced-repair-lotion-16.9oz': 'skincare',
+    'pataday-max-strength': 'allergy',
+};
+
+// Fake product catalog for demo categories
+// Format: [brand, productName, size, basePrice]
+const FAKE_CATALOG = {
+    respiratory: [
+        ['Mucinex', 'DM 12-Hour Tablets', '20 ct', 18.99],
+        ['Mucinex', 'Fast-Max Severe', '20 ct', 16.49],
+        ['Mucinex', 'Nightshift Cold + Flu', '20 ct', 15.99],
+        ['Flonase', 'Allergy Relief Spray', '120 sprays', 22.99],
+        ['Flonase', 'Sensimist Spray', '120 sprays', 24.49],
+    ],
+    allergy: [
+        ['Zyrtec', '24-Hour Tablets', '30 ct', 19.99],
+        ['Zyrtec', '24-Hour Tablets', '90 ct', 39.99],
+        ['Claritin', '24-Hour Non-Drowsy', '30 ct', 18.99],
+        ['Claritin', 'RediTabs', '30 ct', 21.49],
+    ],
+    diabetes: [
+        ['OneTouch', 'Verio Test Strips', '50 ct', 32.99],
+        ['OneTouch', 'Ultra Test Strips', '50 ct', 29.99],
+        ['FreeStyle', 'Libre 2 Sensor', '2 pk', 69.99],
+        ['FreeStyle', 'Lite Test Strips', '50 ct', 28.99],
+        ['Contour', 'Next Test Strips', '50 ct', 24.99],
+    ],
+    digestive: [
+        ['Prilosec', 'OTC Acid Reducer', '42 ct', 22.99],
+        ['Metamucil', 'Sugar-Free Fiber', '180 ct', 28.99],
+        ['Imodium', 'A-D Caplets', '24 ct', 11.99],
+        ['Gas-X', 'Extra Strength', '72 ct', 13.49],
+        ['Culturelle', 'Daily Probiotic', '30 ct', 24.99],
+    ],
+    joint: [
+        ['Voltaren', 'Arthritis Pain Gel', '3.5 oz', 16.99],
+        ['Voltaren', 'Arthritis Pain Gel', '5.3 oz', 22.49],
+        ['Biofreeze', 'Pain Relief Roll-On', '2.5 oz', 11.99],
+        ['Biofreeze', 'Pain Relief Gel', '3 oz', 10.99],
+        ['Move Free', 'Advanced Glucosamine', '80 ct', 22.99],
+    ],
+    vision: [
+        ['Systane', 'Ultra Lubricant Drops', '10 ml', 15.99],
+        ['Systane', 'Complete Drops', '10 ml', 17.49],
+        ['Refresh', 'Tears Lubricant', '15 ml', 11.99],
+        ['Refresh', 'Optive Drops', '15 ml', 14.99],
+        ['TheraTears', 'Dry Eye Therapy', '15 ml', 12.49],
+    ],
+    sleep: [
+        ['ResMed', 'AirFit F20 Mask', '1 ct', 89.99],
+        ['ResMed', 'AirFit N20 Mask', '1 ct', 79.99],
+        ['ZzzQuil', 'Pure Zzzs Melatonin', '48 ct', 16.99],
+        ['Breathe Right', 'Nasal Strips', '44 ct', 14.49],
+        ['Philips', 'DreamWear Mask', '1 ct', 69.99],
+    ],
+    pain: [
+        ['Advil', 'Ibuprofen 200mg', '100 ct', 11.99],
+        ['Advil', 'Dual Action', '72 ct', 14.99],
+        ['Tylenol', 'Extra Strength 500mg', '100 ct', 11.49],
+        ['Tylenol', 'Arthritis Pain', '170 ct', 16.99],
+        ['Aleve', 'Naproxen 220mg', '100 ct', 12.99],
+    ],
+    heart: [
+        ['Omron', 'Series 7 BP Monitor', '1 ct', 64.99],
+        ['Omron', 'Series 5 BP Monitor', '1 ct', 49.99],
+        ['Nature Made', 'Fish Oil 1200mg', '200 ct', 18.99],
+        ['Nature Made', 'CoQ10 100mg', '72 ct', 22.49],
+        ['Bayer', 'Low Dose Aspirin 81mg', '300 ct', 11.99],
+    ],
+    oral: [
+        ['Sensodyne', 'Pronamel Toothpaste', '4 oz', 7.99],
+        ['Sensodyne', 'Repair + Protect', '3.4 oz', 8.49],
+        ['Crest', 'Pro-Health Paste', '4.6 oz', 6.99],
+        ['Listerine', 'Total Care Rinse', '1 L', 10.99],
+        ['Colgate', 'Peroxyl Rinse', '16 oz', 9.49],
+    ],
+    hair: [
+        ['Rogaine', "Men's 5% Foam", '3 mo', 49.99],
+        ['Rogaine', "Women's 2% Solution", '3 mo', 39.99],
+        ['Nizoral', 'A-D Shampoo', '7 oz', 15.99],
+        ['Nizoral', 'Anti-Dandruff', '14 oz', 24.99],
+        ['Head + Shoulders', 'Clinical Strength', '13.5 oz', 9.99],
+    ],
+    incontinence: [
+        ['Depend', 'FIT-FLEX Men', '32 ct', 29.99],
+        ['Depend', 'FIT-FLEX Women', '32 ct', 29.99],
+        ['Always Discreet', 'Maximum Pads', '39 ct', 19.99],
+        ['Always Discreet', 'Underwear', '19 ct', 24.99],
+        ['Poise', 'Ultra Thin Pads', '48 ct', 16.99],
+    ],
+    vitamins: [
+        ['Nature Made', 'Vitamin D3 2000IU', '220 ct', 12.99],
+        ['Nature Made', 'Vitamin B12 1000mcg', '160 ct', 11.49],
+        ['Centrum', 'Silver Men 50+', '200 ct', 19.99],
+        ['Centrum', 'Silver Women 50+', '200 ct', 19.99],
+        ['One A Day', "Men's Multi", '200 ct', 17.99],
+    ],
+    hearing: [
+        ['Rayovac', 'Size 312 Batteries', '48 pk', 14.99],
+        ['Rayovac', 'Size 13 Batteries', '48 pk', 14.99],
+        ['Energizer', 'Size 312 Batteries', '16 pk', 8.99],
+        ['Energizer', 'Size 10 Batteries', '16 pk', 8.99],
+        ['Duracell', 'Size 675 Batteries', '12 pk', 9.49],
+    ],
+    foot: [
+        ["Dr. Scholl's", 'Plantar Fasciitis Insoles', '1 pr', 14.99],
+        ["Dr. Scholl's", 'Blister Cushions', '8 ct', 8.49],
+        ["Dr. Scholl's", 'Corn Remover', '9 ct', 7.99],
+        ['Gold Bond', 'Therapeutic Foot Cream', '4 oz', 8.99],
+        ['Kerasal', 'Intensive Foot Repair', '1 oz', 12.99],
+    ],
+    migraine: [
+        ['Excedrin', 'Migraine Caplets', '100 ct', 13.99],
+        ['Excedrin', 'Tension Headache', '100 ct', 12.99],
+        ['Excedrin', 'PM Headache', '100 ct', 12.49],
+        ['Advil', 'Migraine Liqui-Gels', '80 ct', 13.49],
+        ['Motrin', 'IB Ibuprofen', '100 ct', 10.99],
+    ],
+    firstaid: [
+        ['Neosporin', 'Original Ointment', '1 oz', 8.99],
+        ['Neosporin', 'Pain Relief Ointment', '1 oz', 9.99],
+        ['Band-Aid', 'Flexible Fabric', '100 ct', 8.49],
+        ['Band-Aid', 'Hydro Seal', '10 ct', 7.99],
+        ['Curad', 'Assorted Bandages', '80 ct', 5.99],
+    ],
+};
+
+// Category data stores for lazy rendering
+const categoryDataStore = {};
+const renderedCategories = new Set();
+
+// Generate fake chart data with correlated retailer pricing
+function generateFakeChartData(basePrice) {
+    const retailers = ['amazon', 'target', 'walmart', 'walgreens', 'cvs'];
+    const count = 3 + Math.floor(Math.random() * 3);
+    const selected = [...retailers].sort(() => 0.5 - Math.random()).slice(0, count);
+    const days = 90;
+    const trend = [];
+    for (let i = 0; i <= days; i++) {
+        trend.push(Math.sin(i * 0.07) * 0.03 + Math.sin(i * 0.02) * 0.05);
+    }
+    return selected.map(retailer => {
+        const prices = [];
+        const now = new Date();
+        const bias = (retailer.charCodeAt(0) % 10 - 5) * 0.01;
+        for (let i = days; i >= 0; i--) {
+            const date = new Date(now);
+            date.setDate(date.getDate() - i);
+            const dayIdx = days - i;
+            const noise = (Math.random() - 0.5) * 0.04;
+            const price = Math.round(basePrice * (1 + trend[dayIdx] + bias + noise) * 100) / 100;
+            prices.push({ date: date.toISOString().split('T')[0], price: Math.max(price, basePrice * 0.85) });
+        }
+        return { retailer, prices };
+    });
+}
+
+// Derive retailer summary stats from chart data
+function deriveRetailerStats(chartData) {
+    return chartData.map(rd => {
+        const prices = rd.prices.map(p => p.price);
+        const high = Math.max(...prices);
+        const low = Math.min(...prices);
+        const avg = prices.reduce((a, b) => a + b, 0) / prices.length;
+        return {
+            name: rd.retailer,
+            high, highDate: rd.prices.find(p => p.price === high).date,
+            low, lowDate: rd.prices.find(p => p.price === low).date,
+            avg: Math.round(avg * 100) / 100,
+            url: '#'
+        };
+    }).sort((a, b) => a.avg - b.avg);
+}
+
+// Build full product object from compact catalog entry
+function buildFakeProduct(brand, name, size, basePrice, category) {
+    const id = `${brand}-${name}-${size}`.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '');
+    const chartData = generateFakeChartData(basePrice);
+    const retailers = deriveRetailerStats(chartData);
+    return { id, name, brand, size, category, retailers, chartData };
+}
+
 // Initialize dashboard on page load
 document.addEventListener('DOMContentLoaded', async () => {
     await loadDashboard();
@@ -41,6 +226,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         card.addEventListener('click', (e) => {
             e.preventDefault();
             card.classList.toggle('active');
+            filterCategories();
         });
     });
 
@@ -94,33 +280,121 @@ async function loadDashboard() {
 
         dashboard.innerHTML = '';
 
-        if (!data.brands || data.brands.length === 0) {
-            dashboard.innerHTML = '<div class="loading">No price data available yet. Please check back after the first data collection run.</div>';
-            return;
-        }
-
-        // Compute global date range across all products
+        // Compute global date range across real data
         globalDateRange = { min: null, max: null };
-        data.brands.forEach(brand => {
-            brand.products.forEach(product => {
-                product.chartData.forEach(rd => {
-                    rd.prices.forEach(p => {
-                        const d = new Date(p.date);
-                        if (!globalDateRange.min || d < globalDateRange.min) globalDateRange.min = d;
-                        if (!globalDateRange.max || d > globalDateRange.max) globalDateRange.max = d;
+        if (data.brands) {
+            data.brands.forEach(brand => {
+                brand.products.forEach(product => {
+                    product.chartData.forEach(rd => {
+                        rd.prices.forEach(p => {
+                            const d = new Date(p.date);
+                            if (!globalDateRange.min || d < globalDateRange.min) globalDateRange.min = d;
+                            if (!globalDateRange.max || d > globalDateRange.max) globalDateRange.max = d;
+                        });
                     });
                 });
             });
+        }
+
+        // Extend to cover fake data range (last 90 days)
+        const now = new Date();
+        const ninetyDaysAgo = new Date(now);
+        ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+        if (!globalDateRange.min || ninetyDaysAgo < globalDateRange.min) globalDateRange.min = ninetyDaysAgo;
+        if (!globalDateRange.max || now > globalDateRange.max) globalDateRange.max = now;
+
+        // Tag real products with categories and organize into categoryDataStore
+        if (data.brands) {
+            data.brands.forEach(brand => {
+                brand.products.forEach(product => {
+                    const cat = REAL_PRODUCT_CATEGORIES[product.id] || 'skincare';
+                    if (!categoryDataStore[cat]) categoryDataStore[cat] = {};
+                    if (!categoryDataStore[cat][brand.name]) categoryDataStore[cat][brand.name] = [];
+                    categoryDataStore[cat][brand.name].push(product);
+                });
+            });
+        }
+
+        // Generate fake data and add to categoryDataStore
+        Object.entries(FAKE_CATALOG).forEach(([category, entries]) => {
+            if (!categoryDataStore[category]) categoryDataStore[category] = {};
+            entries.forEach(([brand, name, size, basePrice]) => {
+                const product = buildFakeProduct(brand, name, size, basePrice, category);
+                if (!categoryDataStore[category][brand]) categoryDataStore[category][brand] = [];
+                categoryDataStore[category][brand].push(product);
+            });
         });
 
-        // Render each brand container
-        data.brands.forEach(brand => {
-            renderBrandContainer(brand, dashboard);
-        });
+        // Render initially active categories
+        const activeCategories = [...document.querySelectorAll('.category-card.active')]
+            .map(c => c.dataset.category);
+
+        if (activeCategories.length === 0) {
+            dashboard.innerHTML = '<div class="loading no-categories-msg">Toggle a category above to browse products.</div>';
+            return;
+        }
+
+        activeCategories.forEach(cat => renderCategorySection(cat, dashboard));
 
     } catch (error) {
         console.error('Error loading dashboard:', error);
         dashboard.innerHTML = `<div class="loading" style="color: #d32f2f;">Error loading data: ${error.message}<br><br>Make sure the API server is running.</div>`;
+    }
+}
+
+// Render all brand containers for a category (lazy — only renders once)
+function renderCategorySection(category, dashboard) {
+    if (renderedCategories.has(category)) {
+        const section = dashboard.querySelector(`.category-section[data-category="${category}"]`);
+        if (section) section.style.display = '';
+        return;
+    }
+
+    const categoryBrands = categoryDataStore[category];
+    if (!categoryBrands || Object.keys(categoryBrands).length === 0) return;
+
+    const section = document.createElement('div');
+    section.className = 'category-section';
+    section.dataset.category = category;
+
+    Object.entries(categoryBrands).forEach(([brandName, products]) => {
+        renderBrandContainer({ name: brandName, products }, section);
+    });
+
+    dashboard.appendChild(section);
+    renderedCategories.add(category);
+}
+
+// Show/hide category sections based on active toggles
+function filterCategories() {
+    const dashboard = document.getElementById('dashboard');
+    const activeCategories = new Set(
+        [...document.querySelectorAll('.category-card.active')].map(c => c.dataset.category)
+    );
+
+    // Hide all rendered sections first
+    document.querySelectorAll('.category-section').forEach(section => {
+        section.style.display = activeCategories.has(section.dataset.category) ? '' : 'none';
+    });
+
+    // Render any newly active categories not yet rendered
+    activeCategories.forEach(cat => {
+        if (!renderedCategories.has(cat)) {
+            renderCategorySection(cat, dashboard);
+        }
+    });
+
+    // Show message if nothing is active
+    const emptyMsg = dashboard.querySelector('.no-categories-msg');
+    if (activeCategories.size === 0) {
+        if (!emptyMsg) {
+            const msg = document.createElement('div');
+            msg.className = 'loading no-categories-msg';
+            msg.textContent = 'Toggle a category above to browse products.';
+            dashboard.appendChild(msg);
+        }
+    } else if (emptyMsg) {
+        emptyMsg.remove();
     }
 }
 
