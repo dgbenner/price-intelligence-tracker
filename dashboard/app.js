@@ -896,7 +896,8 @@ function renderRetailerRow(retailer, tbody, isBestValue, isTodaysBest, isLowestE
         let tags = '';
         if (isTodaysBest) tags += '<span class="retailer-tag todays-best-tag"><span class="tag-check">✓</span> Today\'s Best Price</span>';
         if (isBestValue) tags += '<span class="retailer-tag consistent-tag"><span class="tag-check tag-check-blue">✓</span> Consistent Best Value</span>';
-        if (isLowestEver) tags += '<span class="retailer-tag lowest-ever-tag"><span style="font-size:0.8rem;margin-right:-1px">▾</span> Lowest Ever</span>';
+        // Lowest Ever badge removed — was causing layout overflow
+        // if (isLowestEver) tags += '<span class="retailer-tag lowest-ever-tag"><span style="font-size:0.8rem;margin-right:-1px">▾</span> Lowest Ever</span>';
         tagRow.innerHTML = `<td colspan="5" class="tag-cell">${tags}</td>`;
         tbody.appendChild(tagRow);
     }
