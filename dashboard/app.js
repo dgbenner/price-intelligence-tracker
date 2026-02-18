@@ -994,7 +994,7 @@ function getLowestPriceEver(product) {
     return { retailer: lowestRetailer, price: lowestPrice, date: lowestDate };
 }
 
-// Placeholder trend insights per retailer
+// Placeholder trend insights per retailer (used for real products)
 const TREND_INSIGHTS = [
     {
         retailer: 'amazon',
@@ -1028,13 +1028,113 @@ const TREND_INSIGHTS = [
     }
 ];
 
+// Category-specific AI insights for fake/demo products
+const CATEGORY_INSIGHTS = {
+    respiratory: [
+        { retailer: 'walmart', text: 'Mucinex pricing correlates with CDC flu surveillance data \u2014 wholesale cost increases 2\u20133 weeks before regional outbreak peaks', confidence: 41, date: 'Observed Jan 2026' },
+        { retailer: 'amazon', text: 'Amazon Subscribe & Save discounts on cold/flu products disappear Nov\u2013Feb, resuming in spring when demand drops', confidence: 38, date: 'Observed Nov 2025' },
+        { retailer: 'cvs', text: 'Reckitt Benckiser (Mucinex parent) raised wholesale list price 6% in Q4 \u2014 CVS passed through immediately, Walmart absorbed for 3 weeks', confidence: 52, date: 'Observed Oct 2025' },
+        { retailer: 'target', text: 'Flonase sees a secondary price spike in early September tied to fall allergy season, independent of cold/flu cycle', confidence: 29, date: 'Observed Sep 2025' },
+        { retailer: 'walgreens', text: 'Walgreens BOGO promotions on respiratory products appear on a 6-week cycle \u2014 effective unit price drops ~40% during windows', confidence: 34, date: 'Ongoing observation' },
+    ],
+    allergy: [
+        { retailer: 'amazon', text: 'Zyrtec and Claritin pricing diverges sharply in March \u2014 likely tied to pollen forecast models influencing Amazon\u2019s demand algorithms', confidence: 33, date: 'Observed Mar 2025' },
+        { retailer: 'walmart', text: 'Walmart holds allergy medication pricing flat through peak season, possibly loss-leading to drive pharmacy foot traffic', confidence: 47, date: 'Observed Apr\u2013Jun 2025' },
+        { retailer: 'cvs', text: 'CVS store-brand loratadine undercuts Claritin by 55% \u2014 branded pricing may be sustained by manufacturer trade spend agreements', confidence: 26, date: 'Observed Feb 2026' },
+        { retailer: 'target', text: 'Target Circle offers on allergy products cluster around seasonal transitions, ~2 weeks before pollen counts rise regionally', confidence: 31, date: 'Observed Mar 2025' },
+        { retailer: 'walgreens', text: 'Johnson & Johnson (Zyrtec) appears to coordinate wholesale price resets annually in January \u2014 retail prices follow within 10 days', confidence: 44, date: 'Observed Jan 2026' },
+    ],
+    diabetes: [
+        { retailer: 'amazon', text: 'FreeStyle Libre sensor pricing on Amazon fluctuates with third-party seller inventory \u2014 Abbott direct listings hold steady', confidence: 56, date: 'Ongoing observation' },
+        { retailer: 'walmart', text: 'Walmart\u2019s ReliOn brand exerts downward pressure on test strip pricing \u2014 branded strips drop ~4% within 30 days of ReliOn promos', confidence: 43, date: 'Observed Dec 2025' },
+        { retailer: 'cvs', text: 'CVS Caremark formulary changes correlate with OTC diabetes supply pricing shifts \u2014 test strip costs rose after PBM contract renegotiation', confidence: 28, date: 'Observed Nov 2025' },
+        { retailer: 'target', text: 'Contour Next strips show unusual price stability at Target \u2014 possible long-term pricing agreement with Ascensia Diabetes Care', confidence: 37, date: 'Observed Jan 2026' },
+        { retailer: 'walgreens', text: 'Walgreens runs diabetes care promotions tied to ADA awareness months \u2014 November shows consistent 10\u201315% markdowns', confidence: 51, date: 'Observed Nov 2025' },
+    ],
+    digestive: [
+        { retailer: 'walmart', text: 'Prilosec OTC pricing dropped 7% after Walmart expanded shelf space for store-brand omeprazole \u2014 competitive pressure pattern', confidence: 45, date: 'Observed Sep 2025' },
+        { retailer: 'amazon', text: 'Metamucil bulk sizes on Amazon show algorithmically driven price changes \u2014 up to 3 adjustments per day during Prime event weeks', confidence: 39, date: 'Observed Oct 2025' },
+        { retailer: 'cvs', text: 'Procter & Gamble digestive portfolio pricing moves in lockstep across products \u2014 suggests bundled wholesale agreements with CVS', confidence: 32, date: 'Observed Dec 2025' },
+        { retailer: 'target', text: 'Culturelle probiotic pricing at Target inversely correlates with yogurt aisle promotions \u2014 possible cross-category competitive response', confidence: 19, date: 'Observed Jan 2026' },
+        { retailer: 'walgreens', text: 'Gas-X shows post-holiday price increases (~5%) in January, likely tied to seasonal demand patterns around holiday eating', confidence: 36, date: 'Observed Jan 2026' },
+    ],
+    joint: [
+        { retailer: 'amazon', text: 'Voltaren pricing spiked 12% after GSK limited Amazon distribution channels \u2014 third-party sellers filled gap at higher margins', confidence: 48, date: 'Observed Aug 2025' },
+        { retailer: 'walmart', text: 'Biofreeze shows price compression at Walmart after Performance Health expanded retail distribution \u2014 increased competition', confidence: 35, date: 'Observed Nov 2025' },
+        { retailer: 'cvs', text: 'CVS joint care category pricing rises in Q1 \u2014 aligns with New Year\u2019s resolution fitness activity spike and related injury demand', confidence: 27, date: 'Observed Jan 2026' },
+        { retailer: 'target', text: 'Move Free pricing at Target trends downward as Schiff Vitamins increases DTC marketing spend \u2014 retail channel deprioritized', confidence: 22, date: 'Observed Feb 2026' },
+        { retailer: 'walgreens', text: 'Voltaren OTC switch in 2020 created lasting pricing volatility \u2014 retailers still adjusting margin expectations five years later', confidence: 40, date: 'Ongoing observation' },
+    ],
+    vision: [
+        { retailer: 'walmart', text: 'Systane pricing at Walmart tracks Alcon quarterly earnings calls \u2014 wholesale adjustments correlate with reported eye care revenue targets', confidence: 34, date: 'Observed Jan 2026' },
+        { retailer: 'amazon', text: 'Refresh Tears shows Amazon dynamic pricing tied to allergy season \u2014 dry eye product demand rises with antihistamine use', confidence: 42, date: 'Observed Apr 2025' },
+        { retailer: 'cvs', text: 'TheraTears pricing at CVS dropped after Prestige Consumer Healthcare acquisition \u2014 new parent company appears to favor volume strategy', confidence: 31, date: 'Observed Oct 2025' },
+        { retailer: 'target', text: 'Target bundles eye drops with contact lens solution in Circle promotions \u2014 effective unit pricing drops 18% during bundle windows', confidence: 25, date: 'Observed Dec 2025' },
+        { retailer: 'walgreens', text: 'Walgreens vision category shows price increases after each Bausch + Lomb earnings report \u2014 manufacturer margin pressure passed through', confidence: 38, date: 'Observed Nov 2025' },
+    ],
+    sleep: [
+        { retailer: 'amazon', text: 'ResMed CPAP mask pricing on Amazon subject to MAP enforcement \u2014 prices cluster within $2 of manufacturer minimum across sellers', confidence: 58, date: 'Ongoing observation' },
+        { retailer: 'walmart', text: 'ZzzQuil pricing inversely correlates with melatonin supplement category growth \u2014 P&G may be responding to generic competition', confidence: 33, date: 'Observed Jan 2026' },
+        { retailer: 'cvs', text: 'Breathe Right strips show steady 3\u20134% annual price creep at CVS \u2014 low competition in nasal strip category enables margin expansion', confidence: 46, date: 'Observed Feb 2026' },
+        { retailer: 'target', text: 'Philips DreamWear availability at Target fluctuates with Philips Respironics production capacity \u2014 supply constraints drive price spikes', confidence: 41, date: 'Observed Sep 2025' },
+        { retailer: 'walgreens', text: 'Sleep aid category sees consistent January pricing surge across all retailers \u2014 New Year wellness demand cycle', confidence: 37, date: 'Observed Jan 2026' },
+    ],
+    pain: [
+        { retailer: 'walmart', text: 'Walmart pain relief pricing is the most stable tracked category \u2014 likely due to extreme price sensitivity and competitive benchmarking', confidence: 61, date: 'Ongoing observation' },
+        { retailer: 'amazon', text: 'Advil Dual Action premium over standard Advil narrowing on Amazon \u2014 Haleon may be adjusting wholesale tiers to drive adoption', confidence: 36, date: 'Observed Dec 2025' },
+        { retailer: 'cvs', text: 'Tylenol pricing at CVS shows anomalous spikes during cold/flu season \u2014 demand overlap with fever treatment drives opportunistic markup', confidence: 29, date: 'Observed Jan 2026' },
+        { retailer: 'target', text: 'Aleve pricing at Target undercuts Walmart by 3\u20135% consistently \u2014 possible Bayer trade spend agreement for preferred shelf placement', confidence: 24, date: 'Observed Nov 2025' },
+        { retailer: 'walgreens', text: 'Haleon (Advil parent) Q3 earnings cited \u201cprice/mix improvement\u201d in NA OTC \u2014 wholesale increases detected across retailers within 2 weeks', confidence: 50, date: 'Observed Oct 2025' },
+    ],
+    heart: [
+        { retailer: 'amazon', text: 'Omron BP monitor pricing follows a Prime Day / holiday cycle \u2014 deepest discounts in July and November, premium pricing Feb\u2013May', confidence: 53, date: 'Observed Nov 2025' },
+        { retailer: 'walmart', text: 'Nature Made fish oil pricing compressed after Walmart expanded private-label omega-3 line \u2014 branded margin pressure increasing', confidence: 40, date: 'Observed Jan 2026' },
+        { retailer: 'cvs', text: 'Bayer aspirin pricing at CVS hasn\u2019t changed in 14 months \u2014 possible long-term pricing contract or low-priority category management', confidence: 55, date: 'Observed Feb 2026' },
+        { retailer: 'target', text: 'CoQ10 supplement pricing volatile at Target \u2014 Pharmavite (Nature Made) appears to run alternating retailer exclusives', confidence: 28, date: 'Observed Dec 2025' },
+        { retailer: 'walgreens', text: 'Heart health category pricing rises in February aligned with American Heart Month marketing \u2014 demand-driven, not cost-driven', confidence: 43, date: 'Observed Feb 2026' },
+    ],
+    oral: [
+        { retailer: 'walmart', text: 'Sensodyne pricing at Walmart stable despite Haleon raising wholesale prices \u2014 Walmart likely absorbing margin to maintain price image', confidence: 47, date: 'Observed Jan 2026' },
+        { retailer: 'amazon', text: 'Listerine bulk pricing on Amazon undercuts per-unit retail by 30%+ \u2014 Kenvue may be using Amazon as a volume/inventory channel', confidence: 38, date: 'Observed Dec 2025' },
+        { retailer: 'cvs', text: 'Crest Pro-Health pricing at CVS moves in sync with Oral-B toothbrush promotions \u2014 P&G cross-category bundling strategy detected', confidence: 33, date: 'Observed Nov 2025' },
+        { retailer: 'target', text: 'Colgate Peroxyl shows higher price variance than other oral care products \u2014 specialty positioning allows wider margin band', confidence: 26, date: 'Observed Oct 2025' },
+        { retailer: 'walgreens', text: 'Oral care category shows back-to-school pricing dip in August across retailers \u2014 likely promotional cycle tied to dental checkup season', confidence: 35, date: 'Observed Aug 2025' },
+    ],
+    hair: [
+        { retailer: 'amazon', text: 'Rogaine pricing on Amazon drops ~15% during Prime events but recovers within 72 hours \u2014 Johnson & Johnson controls post-promo pricing tightly', confidence: 49, date: 'Observed Jul 2025' },
+        { retailer: 'walmart', text: 'Nizoral pricing at Walmart rose after Johnson & Johnson acquired the brand \u2014 portfolio repricing detected across J&J dermatology products', confidence: 42, date: 'Observed Sep 2025' },
+        { retailer: 'cvs', text: 'Head & Shoulders Clinical pricing at CVS tracks P&G quarterly trade spend cycles \u2014 discounts cluster in Q1 and Q3', confidence: 30, date: 'Observed Jan 2026' },
+        { retailer: 'target', text: 'Rogaine Women\u2019s pricing consistently 15\u201320% lower than Men\u2019s at Target \u2014 gendered pricing strategy or different wholesale tiers from J&J', confidence: 37, date: 'Observed Feb 2026' },
+        { retailer: 'walgreens', text: 'Hair loss category sees pricing increases in January and September \u2014 aligned with seasonal hair shedding awareness cycles', confidence: 23, date: 'Observed Jan 2026' },
+    ],
+    incontinence: [
+        { retailer: 'walmart', text: 'Depend pricing at Walmart shows least variance of any tracked incontinence product \u2014 Kimberly-Clark likely has MAP agreement in place', confidence: 52, date: 'Ongoing observation' },
+        { retailer: 'amazon', text: 'Always Discreet Subscribe & Save pricing undercuts retail by 20\u201325% \u2014 P&G aggressively using subscription model to lock in recurring revenue', confidence: 45, date: 'Observed Dec 2025' },
+        { retailer: 'cvs', text: 'Poise pricing at CVS rose after Kimberly-Clark divested to Essity \u2014 new parent company appears to favor margin over volume', confidence: 38, date: 'Observed Oct 2025' },
+        { retailer: 'target', text: 'Target incontinence category shows flat pricing year-round \u2014 sensitive category may have internal price change restrictions', confidence: 41, date: 'Observed Jan 2026' },
+        { retailer: 'walgreens', text: 'Walgreens store-brand incontinence products priced 40% below branded \u2014 highest private-label gap of any tracked category', confidence: 57, date: 'Observed Feb 2026' },
+    ],
+    vitamins: [
+        { retailer: 'amazon', text: 'Nature Made vitamin pricing on Amazon fluctuates with Pharmavite inventory cycles \u2014 bulk listings show 3\u20135 price changes per month', confidence: 39, date: 'Observed Jan 2026' },
+        { retailer: 'walmart', text: 'Centrum pricing compressed after Walmart expanded Equate vitamin line \u2014 private-label pressure strongest in multivitamin subcategory', confidence: 44, date: 'Observed Nov 2025' },
+        { retailer: 'cvs', text: 'Vitamin D3 pricing shows inverse seasonal pattern \u2014 lowest in summer when demand drops, highest Oct\u2013Feb during supplement season', confidence: 48, date: 'Observed Dec 2025' },
+        { retailer: 'target', text: 'Target runs vitamin BOGO cycles on ~8-week intervals \u2014 effective unit cost drops 50% during windows, creating sawtooth price pattern', confidence: 53, date: 'Observed Jan 2026' },
+        { retailer: 'walgreens', text: 'B12 pricing at Walgreens unchanged for 9 months \u2014 low category priority or long-term wholesale agreement with Pharmavite', confidence: 35, date: 'Observed Feb 2026' },
+    ],
+};
+
 // Render trend insight cards for a product
 function renderInsights(product, container) {
     // Get which retailers this product has data for
     const activeRetailers = new Set(product.chartData.map(rd => rd.retailer));
 
+    // Use category-specific insights for fake products, generic for real
+    const insightPool = (product.fake && product.category && CATEGORY_INSIGHTS[product.category])
+        ? CATEGORY_INSIGHTS[product.category]
+        : TREND_INSIGHTS;
+
     // Filter insights to only relevant retailers, sort by confidence descending
-    const relevant = TREND_INSIGHTS.filter(i => activeRetailers.has(i.retailer))
+    const relevant = insightPool.filter(i => activeRetailers.has(i.retailer))
         .sort((a, b) => b.confidence - a.confidence);
 
     relevant.forEach(insight => {
