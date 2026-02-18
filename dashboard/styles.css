@@ -129,6 +129,7 @@ header {
     flex-shrink: 0;
     transition: all 0.2s;
     padding: 0;
+    padding-bottom: 2px;
     line-height: 1;
     position: relative;
     top: -1px;
