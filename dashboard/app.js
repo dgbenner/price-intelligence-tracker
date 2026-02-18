@@ -857,7 +857,7 @@ function renderChart(canvas, product, range) {
 // Retailer logo file extensions
 const RETAILER_LOGO_EXT = {
     'walmart': 'svg',
-    'target': 'jpg',
+    'target': 'png',
     'amazon': 'png',
     'walgreens': 'png',
     'cvs': 'png'
